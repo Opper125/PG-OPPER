@@ -1,0 +1,2819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PG-OPPER Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .myanmar-flag {
+            background: linear-gradient(to right, #FFCD00 33.33%, #34B233 33.33%, #34B233 66.66%, #EA2839 66.66%);
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+        }
+        
+        .myanmar-loading {
+            width: 80px;
+            height: 80px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="%23FFCD00"/><path d="M20,33.33 L80,33.33 L80,66.66 L20,66.66 Z" fill="%2334B233"/><path d="M20,66.66 L80,66.66 L80,80 L20,80 Z" fill="%23EA2839"/><circle cx="50" cy="50" r="15" fill="white" stroke="%23333" stroke-width="2"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: myanmar-spin 3s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes myanmar-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-1px);
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(255,255,255,0.2);
+            border-left: 4px solid #fff;
+        }
+        
+        .notification {
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .chat-bubble {
+            animation: bounce 0.3s ease-out;
+        }
+        
+        @keyframes bounce {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            animation: progress 1.5s ease-out;
+        }
+        
+        @keyframes progress {
+            from { width: 0%; }
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.1);
+        }
+        
+        .status-badge {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: float 3s ease-in-out infinite;
+            z-index: 1000;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .modal-overlay {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: scale(0.9) translateY(-50px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .success-animation {
+            animation: successPulse 0.6s ease-out;
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background-color: #10b981; }
+            100% { transform: scale(1); }
+        }
+        
+        .error-shake {
+            animation: shake 0.5s ease-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            animation: chartFadeIn 1s ease-out;
+        }
+        
+        @keyframes chartFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        .stats-counter {
+            animation: countUp 2s ease-out;
+        }
+        
+        @keyframes countUp {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple-effect::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        
+        .ripple-effect:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            to { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+            opacity: 0.3;
+        }
+        
+        .login-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            animation: loginSlideUp 0.8s ease-out;
+        }
+        
+        @keyframes loginSlideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .brand-logo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes logoGlow {
+            from { filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.3)); }
+            to { filter: drop-shadow(0 0 20px rgba(118, 75, 162, 0.5)); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 z-50 flex items-center justify-center gradient-bg">
+        <div class="text-center text-white">
+            <div class="myanmar-loading mx-auto mb-4"></div>
+            <h2 class="text-2xl font-bold mb-2">PG-OPPER Admin</h2>
+            <p class="text-lg opacity-75">Loading Dashboard...</p>
+            <div class="mt-4 w-48 bg-white bg-opacity-20 rounded-full h-2">
+                <div id="loadingProgress" class="progress-bar h-2 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container flex items-center justify-center" style="display: none;">
+        <div class="login-form p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <h1 class="brand-logo text-4xl font-bold mb-2">PG-OPPER</h1>
+                <p class="text-gray-600">Admin Dashboard</p>
+                <div class="myanmar-flag h-1 w-24 mx-auto mt-4 rounded"></div>
+            </div>
+            
+            <form id="adminLoginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Admin Username
+                    </label>
+                    <input type="text" id="adminUsername" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="Enter admin username" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <input type="password" id="adminPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="Enter password" required>
+                </div>
+                
+                <button type="submit" class="w-full btn-primary text-white font-semibold py-3 px-6 rounded-lg ripple-effect">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login to Dashboard
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <p>Protected Admin Area</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="flex h-screen bg-gray-100" style="display: none;">
+        <!-- Sidebar -->
+        <div class="w-64 gradient-bg text-white fixed h-full overflow-y-auto scrollbar-thin">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-2">PG-OPPER</h1>
+                <p class="text-sm opacity-75">Admin Panel</p>
+            </div>
+            
+            <nav class="mt-8">
+                <a href="#" class="sidebar-item active flex items-center px-6 py-3" data-section="overview">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Overview
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="files">
+                    <i class="fas fa-file-alt mr-3"></i>Files & APKs
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="news">
+                    <i class="fas fa-newspaper mr-3"></i>News Management
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="payments">
+                    <i class="fas fa-credit-card mr-3"></i>Payment Methods
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="users">
+                    <i class="fas fa-users mr-3"></i>User Management
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="orders">
+                    <i class="fas fa-shopping-cart mr-3"></i>Orders
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="support">
+                    <i class="fas fa-headset mr-3"></i>Support Chat
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="about">
+                    <i class="fas fa-info-circle mr-3"></i>About Settings
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3" data-section="profile">
+                    <i class="fas fa-user-cog mr-3"></i>Admin Profile
+                </a>
+            </nav>
+            
+            <div class="absolute bottom-0 w-64 p-6">
+                <button id="logoutBtn" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-all">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 ml-64 overflow-y-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm p-6 flex justify-between items-center">
+                <div>
+                    <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
+                    <p class="text-gray-600">Welcome back, Admin!</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="relative p-2 text-gray-600 hover:text-gray-800 transition-colors">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <img id="adminAvatar" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23667eea'/><circle cx='50' cy='35' r='15' fill='white'/><path d='M20 80 Q50 60 80 80' fill='white'/></svg>" alt="Admin" class="w-10 h-10 rounded-full">
+                        <span id="adminName" class="text-gray-700 font-medium">Admin</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content Area -->
+            <div class="p-6">
+                <!-- Overview Section -->
+                <div id="overviewSection" class="section">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover-lift card-hover">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                    <i class="fas fa-file-alt text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Total Files</p>
+                                    <p id="totalFiles" class="text-2xl font-bold text-gray-900 stats-counter">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover-lift card-hover">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                    <i class="fas fa-users text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Active Users</p>
+                                    <p id="totalUsers" class="text-2xl font-bold text-gray-900 stats-counter">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover-lift card-hover">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                    <i class="fas fa-shopping-cart text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Pending Orders</p>
+                                    <p id="pendingOrders" class="text-2xl font-bold text-gray-900 stats-counter">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover-lift card-hover">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                    <i class="fas fa-dollar-sign text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Revenue</p>
+                                    <p id="totalRevenue" class="text-2xl font-bold text-gray-900 stats-counter">$0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <h3 class="text-lg font-semibold mb-4">Downloads Analytics</h3>
+                            <div class="chart-container">
+                                <canvas id="downloadsChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <h3 class="text-lg font-semibold mb-4">User Growth</h3>
+                            <div class="chart-container">
+                                <canvas id="userGrowthChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Files & APKs Section -->
+                <div id="filesSection" class="section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Files & APKs Management</h3>
+                        <button id="addFileBtn" class="btn-primary text-white px-6 py-2 rounded-lg ripple-effect">
+                            <i class="fas fa-plus mr-2"></i>Add New File/APK
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <div class="mb-4 flex flex-wrap gap-4">
+                            <input type="text" id="fileSearch" placeholder="Search files..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <select id="fileTypeFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                <option value="">All Types</option>
+                                <option value="file">Files</option>
+                                <option value="apk">APKs</option>
+                            </select>
+                        </div>
+                        
+                        <div id="filesTable" class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Downloads</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="filesTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Files will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- News Management Section -->
+                <div id="newsSection" class="section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">News Management</h3>
+                        <button id="addNewsBtn" class="btn-primary text-white px-6 py-2 rounded-lg ripple-effect">
+                            <i class="fas fa-plus mr-2"></i>Create News Post
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow-lg p-6">
+                                <h4 class="text-lg font-semibold mb-4">Recent News Posts</h4>
+                                <div id="newsList" class="space-y-4">
+                                    <!-- News items will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h4 class="text-lg font-semibold mb-4">Admin Profile</h4>
+                            <div id="adminNewsProfile" class="text-center">
+                                <img id="adminProfileImg" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23667eea'/><circle cx='50' cy='35' r='15' fill='white'/><path d='M20 80 Q50 60 80 80' fill='white'/></svg>" alt="Profile" class="w-20 h-20 rounded-full mx-auto mb-4">
+                                <h5 id="adminProfileName" class="font-semibold">Admin</h5>
+                                <p id="adminProfileUsername" class="text-gray-600 text-sm">@admin</p>
+                                <button id="editProfileBtn" class="mt-4 text-purple-600 hover:text-purple-800 text-sm">
+                                    <i class="fas fa-edit mr-1"></i>Edit Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Methods Section -->
+                <div id="paymentsSection" class="section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Payment Methods</h3>
+                        <button id="addPaymentBtn" class="btn-primary text-white px-6 py-2 rounded-lg ripple-effect">
+                            <i class="fas fa-plus mr-2"></i>Add Payment Method
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="paymentMethods">
+                        <!-- Payment methods will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Users Management Section -->
+                <div id="usersSection" class="section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">User Management</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" id="userSearch" placeholder="Search users..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <select id="userStatusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="banned">Banned</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Orders Section -->
+                <div id="ordersSection" class="section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Orders Management</h3>
+                        <div class="flex space-x-2">
+                            <select id="orderStatusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                <option value="">All Orders</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Orders will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Support Chat Section -->
+                <div id="supportSection" class="section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Support Chat</h3>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-600">Active Conversations: <span id="activeChatCount" class="font-semibold">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="height: 600px;">
+                        <div class="bg-white rounded-lg shadow-lg p-4">
+                            <h4 class="font-semibold mb-4">Chat List</h4>
+                            <div id="chatList" class="space-y-2 overflow-y-auto scrollbar-thin" style="height: 500px;">
+                                <!-- Chat list will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow-lg flex flex-col">
+                            <div id="chatHeader" class="p-4 border-b border-gray-200">
+                                <div class="flex items-center space-x-3">
+                                    <img id="currentChatAvatar" src="/placeholder.svg" alt="" class="w-10 h-10 rounded-full" style="display: none;">
+                                    <div>
+                                        <h5 id="currentChatName" class="font-semibold">Select a conversation</h5>
+                                        <p id="currentChatStatus" class="text-sm text-gray-600"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto scrollbar-thin" style="height: 400px;">
+                                <div class="text-center text-gray-500 py-8">
+                                    <i class="fas fa-comments text-4xl mb-4"></i>
+                                    <p>Select a conversation to start chatting</p>
+                                </div>
+                            </div>
+                            
+                            <div id="chatInput" class="p-4 border-t border-gray-200" style="display: none;">
+                                <div class="flex space-x-2">
+                                    <input type="text" id="messageInput" placeholder="Type your message..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                    <button id="sendMessageBtn" class="btn-primary text-white px-4 py-2 rounded-lg ripple-effect">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- About Settings Section -->
+                <div id="aboutSection" class="section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">About Settings</h3>
+                        <button id="addAboutBtn" class="btn-primary text-white px-6 py-2 rounded-lg ripple-effect">
+                            <i class="fas fa-plus mr-2"></i>Add About Item
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="aboutItems">
+                        <!-- About items will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Admin Profile Section -->
+                <div id="profileSection" class="section" style="display: none;">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="bg-white rounded-lg shadow-lg p-8">
+                            <div class="text-center mb-8">
+                                <div class="relative inline-block">
+                                    <img id="profileImage" src="data:image/svg+svg,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23667eea'/><circle cx='50' cy='35' r='15' fill='white'/><path d='M20 80 Q50 60 80 80' fill='white'/></svg>" alt="Profile" class="w-32 h-32 rounded-full mx-auto">
+                                    <button id="changeProfileImg" class="absolute bottom-0 right-0 bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 transition-colors">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </div>
+                                <h2 class="text-2xl font-bold mt-4">Admin Profile</h2>
+                            </div>
+                            
+                            <form id="profileForm" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                                        <input type="text" id="profileUsername" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Admin username">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                        <input type="text" id="profileName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Full name">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                    <input type="email" id="profileEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Admin email">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                    <input type="password" id="profilePassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Leave blank to keep current">
+                                </div>
+                                
+                                <div class="flex justify-center">
+                                    <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg ripple-effect">
+                                        <i class="fas fa-save mr-2"></i>Update Profile
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- File Upload Modal -->
+    <div id="fileUploadModal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center" style="display: none;">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Upload File/APK</h3>
+                <button class="modal-close text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="fileUploadForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input type="text" id="fileName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="File/APK name" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="fileDescription" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Description"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                    <select id="fileType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
+                        <option value="">Select type</option>
+                        <option value="file">File</option>
+                        <option value="apk">APK</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+                    <input type="number" id="filePrice" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="0.00" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
+                    <div class="file-upload-area p-6 border-2 border-dashed rounded-lg text-center">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">Drag and drop your file here, or click to browse</p>
+                        <input type="file" id="fileInput" class="hidden" accept=".apk,*">
+                        <button type="button" id="browseFileBtn" class="text-purple-600 hover:text-purple-800">Browse Files</button>
+                    </div>
+                    <div id="filePreview" class="mt-4" style="display: none;"></div>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="modal-close px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-6 py-2 rounded-lg">Upload File</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- News Creation Modal -->
+    <div id="newsModal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center" style="display: none;">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Create News Post</h3>
+                <button class="modal-close text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="newsForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                    <input type="text" id="newsTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="News title" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                    <textarea id="newsContent" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="News content" required></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tags (mention users)</label>
+                    <input type="text" id="newsTags" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="@username1 @username2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Media Files</label>
+                    <div class="file-upload-area p-6 border-2 border-dashed rounded-lg text-center">
+                        <i class="fas fa-images text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">Upload images, videos, GIFs, or audio files</p>
+                        <input type="file" id="newsMediaInput" multiple class="hidden" accept="image/*,video/*,audio/*,.gif">
+                        <button type="button" id="browseMediaBtn" class="text-purple-600 hover:text-purple-800">Browse Media</button>
+                    </div>
+                    <div id="mediaPreview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4" style="display: none;"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">YouTube Channel</label>
+                        <input type="url" id="newsYouTube" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="https://youtube.com/channel/...">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">TikTok Account</label>
+                        <input type="url" id="newsTikTok" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="https://tiktok.com/@...">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Telegram Channel</label>
+                        <input type="url" id="newsTelegram" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="https://t.me/...">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Facebook Profile</label>
+                        <input type="url" id="newsFacebook" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="https://facebook.com/...">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="modal-close px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-6 py-2 rounded-lg">Publish News</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Payment Method Modal -->
+    <div id="paymentModal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center" style="display: none;">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Add Payment Method</h3>
+                <button class="modal-close text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="paymentForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method Name</label>
+                    <input type="text" id="paymentName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="e.g., KBZ Pay, Wave Money" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Account Number/Phone</label>
+                    <input type="text" id="paymentAccount" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Account number or phone number" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">QR Code (Optional)</label>
+                    <div class="file-upload-area p-6 border-2 border-dashed rounded-lg text-center">
+                        <i class="fas fa-qrcode text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">Upload QR code image</p>
+                        <input type="file" id="paymentQRInput" class="hidden" accept="image/*">
+                        <button type="button" id="browseQRBtn" class="text-purple-600 hover:text-purple-800">Browse QR Code</button>
+                    </div>
+                    <div id="qrPreview" class="mt-4" style="display: none;"></div>
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="paymentActive" class="mr-3" checked>
+                    <label for="paymentActive" class="text-sm font-medium text-gray-700">Active</label>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="modal-close px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-6 py-2 rounded-lg">Add Payment Method</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- About Item Modal -->
+    <div id="aboutModal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center" style="display: none;">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Add About Item</h3>
+                <button class="modal-close text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="aboutForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input type="text" id="aboutName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="e.g., Facebook, Telegram" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Link</label>
+                    <input type="url" id="aboutLink" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="https://..." required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+                    <div class="file-upload-area p-6 border-2 border-dashed rounded-lg text-center">
+                        <i class="fas fa-image text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">Upload icon image</p>
+                        <input type="file" id="aboutIconInput" class="hidden" accept="image/*">
+                        <button type="button" id="browseIconBtn" class="text-purple-600 hover:text-purple-800">Browse Icon</button>
+                    </div>
+                    <div id="iconPreview" class="mt-4" style="display: none;"></div>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="modal-close px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="btn-primary text-white px-6 py-2 rounded-lg">Add About Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center" style="display: none;">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Order Details</h3>
+                <button class="modal-close text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="orderDetails">
+                <!-- Order details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2">
+        <!-- Notifications will appear here -->
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-button flex items-center justify-center text-white" id="floatingBtn" title="Quick Actions">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://rmeudvhvqlddqqkiziyo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZXVkdmh2cWxkZHFxa2l6aXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTMxOTIsImV4cCI6MjA2OTU2OTE5Mn0.xFgMv-K5o5yyTpe4U2YJK5jC9GPJp98G4cgD9p5W4ak';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Global Variables
+        let currentAdmin = null; // Stores the admin user object from our custom 'users' table
+        let currentChatUser = null;
+        let notifications = [];
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            showLoadingScreen();
+            
+            // Check Supabase connection status
+            await checkSupabaseConnection();
+
+            // Simulate loading process
+            await simulateLoading();
+            
+            // Check if admin is logged in (using custom session for this example)
+            const adminData = localStorage.getItem('adminSession');
+            if (adminData) {
+                currentAdmin = JSON.parse(adminData);
+                // Verify if the logged-in user is actually an admin in the DB
+                const { data: user, error } = await supabaseClient
+                    .from('users')
+                    .select('is_admin')
+                    .eq('id', currentAdmin.id)
+                    .single();
+
+                if (error || !user || !user.is_admin) {
+                    console.error('Admin session invalid or user is not admin:', error?.message);
+                    localStorage.removeItem('adminSession');
+                    currentAdmin = null;
+                    showNotification('Admin session invalid or not an admin.', 'error');
+                    showLoginScreen();
+                } else {
+                    showDashboard();
+                }
+            } else {
+                showLoginScreen();
+            }
+        }
+
+        async function checkSupabaseConnection() {
+            try {
+                // Attempt a simple query to check connection
+                const { data, error } = await supabaseClient.from('users').select('id').limit(1);
+                if (error) {
+                    console.error('Supabase Connection Error:', error.message);
+                    showNotification('Supabase connection failed! Check console for details.', 'error');
+                } else {
+                    console.log('Supabase connected successfully!');
+                }
+            } catch (e) {
+                console.error('Supabase Connection Exception:', e.message);
+                showNotification('Supabase connection failed! An unexpected error occurred.', 'error');
+            }
+        }
+
+        function simulateLoading() {
+            return new Promise(resolve => {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 30;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        resolve();
+                    }
+                    document.getElementById('loadingProgress').style.width = progress + '%';
+                }, 200);
+            });
+        }
+
+        function showLoadingScreen() {
+            document.getElementById('loadingScreen').style.display = 'flex';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'none';
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+        }
+
+        function showDashboard() {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'flex';
+            initializeDashboard();
+        }
+
+        // Authentication
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            // In a real application, this would involve a secure backend call to verify admin credentials
+            // For this example, we'll check against a hardcoded admin user in the 'users' table.
+            try {
+                const { data: adminUser, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('phone', '+95999999999') // Assuming a fixed admin phone for this example
+                    .single();
+
+                if (userError || !adminUser || !adminUser.is_admin) {
+                    showNotification('Invalid credentials or not an admin!', 'error');
+                    document.getElementById('adminLoginForm').classList.add('error-shake');
+                    setTimeout(() => {
+                        document.getElementById('adminLoginForm').classList.remove('error-shake');
+                    }, 500);
+                    return;
+                }
+
+                // Check password using the PostgreSQL function
+                const { data: passwordMatch, error: checkError } = await supabaseClient.rpc('check_password', { 
+                    password_to_check: password, 
+                    hashed_password_in_db: adminUser.hashed_password 
+                });
+
+                if (checkError || !passwordMatch) {
+                    showNotification('Invalid credentials!', 'error');
+                    document.getElementById('adminLoginForm').classList.add('error-shake');
+                    setTimeout(() => {
+                        document.getElementById('adminLoginForm').classList.remove('error-shake');
+                    }, 500);
+                    return;
+                }
+
+                currentAdmin = adminUser;
+                localStorage.setItem('adminSession', JSON.stringify(currentAdmin));
+                showNotification('Login successful!', 'success');
+                showDashboard();
+            } catch (error) {
+                console.error('Admin login error:', error);
+                showNotification('An error occurred during login.', 'error');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('adminSession');
+            currentAdmin = null;
+            showLoginScreen();
+            showNotification('Logged out successfully!', 'info');
+        });
+
+        // Dashboard Initialization
+        async function initializeDashboard() {
+            if (currentAdmin) {
+                document.getElementById('adminName').textContent = currentAdmin.name || 'Admin';
+                // Assuming admin avatar is a fixed SVG or can be set in DB
+                document.getElementById('adminAvatar').src = currentAdmin.avatar || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%23667eea"/><circle cx="50" cy="35" r="15" fill="white"/><path d="M20 80 Q50 60 80 80" fill="white"/></svg>';
+            }
+            
+            // Load dashboard data
+            await loadDashboardStats();
+            await loadFiles();
+            await loadNews();
+            await loadPaymentMethods();
+            await loadUsers();
+            await loadOrders();
+            await loadSupportChats();
+            await loadAboutItems();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Start real-time updates
+            startRealTimeUpdates();
+        }
+
+        // Navigation
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active state
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show section
+                const section = this.dataset.section;
+                showSection(section);
+            });
+        });
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').style.display = 'block';
+            
+            // Update page title
+            const titles = {
+                overview: 'Dashboard Overview',
+                files: 'Files & APKs Management',
+                news: 'News Management',
+                payments: 'Payment Methods',
+                users: 'User Management',
+                orders: 'Orders Management',
+                support: 'Support Chat',
+                about: 'About Settings',
+                profile: 'Admin Profile'
+            };
+            
+            document.getElementById('pageTitle').textContent = titles[sectionName] || 'Dashboard';
+
+            // Re-load data for the section if needed
+            if (sectionName === 'files') loadFiles();
+            else if (sectionName === 'news') loadNews();
+            else if (sectionName === 'payments') loadPaymentMethods();
+            else if (sectionName === 'users') loadUsers();
+            else if (sectionName === 'orders') loadOrders();
+            else if (sectionName === 'support') loadSupportChats();
+            else if (sectionName === 'about') loadAboutItems();
+            else if (sectionName === 'profile') initializeProfileForm();
+        }
+
+        // Dashboard Stats
+        async function loadDashboardStats() {
+            try {
+                // Load stats from database
+                const [filesResult, usersResult, ordersResult] = await Promise.all([
+                    supabaseClient.from('files').select('id, downloads'),
+                    supabaseClient.from('users').select('id, is_banned'),
+                    supabaseClient.from('purchases').select('amount, status')
+                ]);
+                
+                const totalFiles = filesResult.data?.length || 0;
+                const totalUsers = usersResult.data?.length || 0;
+                const activeUsers = usersResult.data?.filter(user => !user.is_banned).length || 0;
+                const pendingOrders = ordersResult.data?.filter(order => order.status === 'pending').length || 0;
+                const totalRevenue = ordersResult.data?.reduce((sum, order) => {
+                    return order.status === 'approved' ? sum + (order.amount || 0) : sum;
+                }, 0) || 0;
+                
+                // Animate counters
+                animateCounter('totalFiles', totalFiles);
+                animateCounter('totalUsers', activeUsers); // Display active users for "Total Users"
+                animateCounter('pendingOrders', pendingOrders);
+                animateCounter('totalRevenue', totalRevenue, '$');
+                
+                // Update notification badge
+                document.getElementById('notificationBadge').textContent = pendingOrders;
+                
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+                showNotification('Error loading dashboard stats', 'error');
+            }
+        }
+
+        function animateCounter(elementId, finalValue, prefix = '') {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const duration = 2000;
+            const startTime = Date.now();
+            
+            function updateCounter() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const currentValue = Math.floor(startValue + (finalValue - startValue) * progress);
+                
+                element.textContent = prefix + currentValue.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            
+            updateCounter();
+        }
+
+        // Charts
+        let downloadsChartInstance = null;
+        let userGrowthChartInstance = null;
+
+        async function initializeCharts() {
+            // Fetch data for charts
+            const { data: filesData, error: filesError } = await supabaseClient.from('files').select('downloads, created_at');
+            const { data: usersData, error: usersError } = await supabaseClient.from('users').select('created_at');
+
+            if (filesError) console.error('Error fetching files for chart:', filesError);
+            if (usersError) console.error('Error fetching users for chart:', usersError);
+
+            const downloadsByMonth = {};
+            filesData?.forEach(file => {
+                const month = new Date(file.created_at).toLocaleString('en-US', { month: 'short', year: 'numeric' });
+                downloadsByMonth[month] = (downloadsByMonth[month] || 0) + file.downloads;
+            });
+
+            const usersByMonth = {};
+            usersData?.forEach(user => {
+                const month = new Date(user.created_at).toLocaleString('en-US', { month: 'short', year: 'numeric' });
+                usersByMonth[month] = (usersByMonth[month] || 0) + 1;
+            });
+
+            const labels = Array.from(new Set([...Object.keys(downloadsByMonth), ...Object.keys(usersByMonth)])).sort();
+            const downloadsData = labels.map(label => downloadsByMonth[label] || 0);
+            const newUsersData = labels.map(label => usersByMonth[label] || 0);
+
+            // Destroy existing chart instances if they exist
+            if (downloadsChartInstance) downloadsChartInstance.destroy();
+            if (userGrowthChartInstance) userGrowthChartInstance.destroy();
+
+            // Downloads Chart
+            const downloadsCtx = document.getElementById('downloadsChart').getContext('2d');
+            downloadsChartInstance = new Chart(downloadsCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Downloads',
+                        data: downloadsData,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // User Growth Chart
+            const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+            userGrowthChartInstance = new Chart(userGrowthCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'New Users',
+                        data: newUsersData,
+                        backgroundColor: '#764ba2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Files Management
+        async function loadFiles() {
+            try {
+                const { data: files, error } = await supabaseClient
+                    .from('files')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const tbody = document.getElementById('filesTableBody');
+                tbody.innerHTML = '';
+                
+                files?.forEach(file => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <div class="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                        <i class="fas fa-${file.type === 'apk' ? 'mobile-alt' : 'file'} text-purple-600"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${file.name}</div>
+                                    <div class="text-sm text-gray-500">${file.description || ''}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${file.type === 'apk' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                                ${file.type.toUpperCase()}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${formatFileSize(file.size || 0)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            $${file.price || 0}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${file.downloads || 0}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editFile('${file.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                            <button onclick="deleteFile('${file.id}')" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading files:', error);
+                showNotification('Error loading files', 'error');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // File Upload
+        document.getElementById('addFileBtn').addEventListener('click', function() {
+            document.getElementById('fileUploadModal').style.display = 'flex';
+        });
+
+        document.getElementById('browseFileBtn').addEventListener('click', function() {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                showFilePreview(file);
+            }
+        });
+
+        function showFilePreview(file) {
+            const preview = document.getElementById('filePreview');
+            preview.style.display = 'block';
+            
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'bg-gray-50 p-4 rounded-lg';
+            fileInfo.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${file.name.endsWith('.apk') ? 'mobile-alt' : 'file'} text-2xl text-purple-600 mr-3"></i>
+                    <div>
+                        <p class="font-medium">${file.name}</p>
+                        <p class="text-sm text-gray-600">${formatFileSize(file.size)}</p>
+                    </div>
+                </div>
+            `;
+            
+            preview.innerHTML = '';
+            preview.appendChild(fileInfo);
+        }
+
+        document.getElementById('fileUploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Please select a file', 'error');
+                return;
+            }
+            
+            try {
+                // Upload file to Supabase Storage
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}-${file.name}`; // Use original name for better identification
+                
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    .from('files')
+                    .upload(fileName, file);
+                
+                if (uploadError) throw uploadError;
+                
+                // Save file metadata to database
+                const { data, error } = await supabaseClient
+                    .from('files')
+                    .insert([{
+                        name: document.getElementById('fileName').value,
+                        description: document.getElementById('fileDescription').value,
+                        type: document.getElementById('fileType').value,
+                        price: parseFloat(document.getElementById('filePrice').value),
+                        file_path: uploadData.path,
+                        size: file.size,
+                        downloads: 0,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (error) throw error;
+                
+                showNotification('File uploaded successfully!', 'success');
+                closeModal('fileUploadModal');
+                loadFiles();
+                loadDashboardStats(); // Update stats
+                
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                showNotification('Error uploading file: ' + error.message, 'error');
+            }
+        });
+
+        async function editFile(fileId) {
+            // Implement edit functionality: fetch file data, populate modal, update on submit
+            showNotification('Edit file functionality not yet implemented.', 'info');
+        }
+
+        async function deleteFile(fileId) {
+            if (!confirm('Are you sure you want to delete this file? This action cannot be undone.')) {
+                return;
+            }
+            try {
+                // First, get the file_path to delete from storage
+                const { data: fileData, error: fetchError } = await supabaseClient
+                    .from('files')
+                    .select('file_path')
+                    .eq('id', fileId)
+                    .single();
+
+                if (fetchError || !fileData) throw fetchError || new Error('File not found in database.');
+
+                // Delete from storage
+                const { error: storageError } = await supabaseClient.storage
+                    .from('files')
+                    .remove([fileData.file_path]);
+
+                if (storageError) throw storageError;
+
+                // Delete from database
+                const { error: dbError } = await supabaseClient
+                    .from('files')
+                    .delete()
+                    .eq('id', fileId);
+                
+                if (dbError) throw dbError;
+                
+                showNotification('File deleted successfully!', 'success');
+                loadFiles();
+                loadDashboardStats(); // Update stats
+            } catch (error) {
+                console.error('Error deleting file:', error);
+                showNotification('Error deleting file: ' + error.message, 'error');
+            }
+        }
+
+        // News Management
+        async function loadNews() {
+            try {
+                const { data: news, error } = await supabaseClient
+                    .from('news')
+                    .select(`
+                        *,
+                        news_profiles (
+                            username,
+                            display_name,
+                            profile_picture_url
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const newsList = document.getElementById('newsList');
+                newsList.innerHTML = '';
+                
+                news?.forEach(article => {
+                    const newsItem = document.createElement('div');
+                    newsItem.className = 'border rounded-lg p-4 hover:shadow-md transition-shadow';
+                    newsItem.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h5 class="font-semibold text-lg mb-2">${article.title}</h5>
+                                <p class="text-gray-600 mb-3">${article.content.substring(0, 100)}...</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <img src="${article.news_profiles?.profile_picture_url ? getStoragePublicUrl('news-profiles', article.news_profiles.profile_picture_url) : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%23667eea"/><circle cx="50" cy="35" r="15" fill="white"/><path d="M20 80 Q50 60 80 80" fill="white"/></svg>'}" alt="Profile" class="w-6 h-6 rounded-full mr-2">
+                                    <span>${article.news_profiles?.display_name || 'Anonymous'}</span>
+                                    <span class="mx-2">•</span>
+                                    <span>${new Date(article.created_at).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2 ml-4">
+                                <button onclick="editNews('${article.id}')" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteNews('${article.id}')" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    newsList.appendChild(newsItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading news:', error);
+                showNotification('Error loading news', 'error');
+            }
+        }
+
+        document.getElementById('addNewsBtn').addEventListener('click', function() {
+            document.getElementById('newsModal').style.display = 'flex';
+        });
+
+        document.getElementById('browseMediaBtn').addEventListener('click', function() {
+            document.getElementById('newsMediaInput').click();
+        });
+
+        document.getElementById('newsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const mediaFiles = document.getElementById('newsMediaInput').files;
+                const mediaPaths = [];
+                
+                // Upload media files
+                for (let i = 0; i < mediaFiles.length; i++) {
+                    const file = mediaFiles[i];
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `news-media/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+                    
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('news-media')
+                        .upload(fileName, file);
+                    
+                    if (uploadError) throw uploadError;
+                    mediaPaths.push(uploadData.path);
+                }
+
+                // Get admin's news profile ID
+                const { data: adminNewsProfile, error: profileError } = await supabaseClient
+                    .from('news_profiles')
+                    .select('id')
+                    .eq('user_id', currentAdmin.id)
+                    .single();
+
+                let newsProfileId = null;
+                if (profileError && profileError.code === 'PGRST116') {
+                    // If admin doesn't have a news profile, create one
+                    const { data: newProfile, error: createProfileError } = await supabaseClient
+                        .from('news_profiles')
+                        .insert([{
+                            user_id: currentAdmin.id,
+                            username: currentAdmin.username || 'admin_user',
+                            display_name: currentAdmin.name || 'Admin',
+                            profile_picture_url: currentAdmin.avatar || null
+                        }])
+                        .select('id')
+                        .single();
+                    if (createProfileError) throw createProfileError;
+                    newsProfileId = newProfile.id;
+                } else if (profileError) {
+                    throw profileError;
+                } else {
+                    newsProfileId = adminNewsProfile.id;
+                }
+                
+                // Save news to database
+                const { data, error } = await supabaseClient
+                    .from('news')
+                    .insert([{
+                        news_profile_id: newsProfileId,
+                        title: document.getElementById('newsTitle').value,
+                        content: document.getElementById('newsContent').value,
+                        tags: document.getElementById('newsTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                        media_urls: mediaPaths,
+                        youtube_link: document.getElementById('newsYouTube').value,
+                        tiktok_link: document.getElementById('newsTikTok').value,
+                        telegram_link: document.getElementById('newsTelegram').value,
+                        facebook_link: document.getElementById('newsFacebook').value,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (error) throw error;
+                
+                showNotification('News published successfully!', 'success');
+                closeModal('newsModal');
+                loadNews();
+                
+            } catch (error) {
+                console.error('Error publishing news:', error);
+                showNotification('Error publishing news: ' + error.message, 'error');
+            }
+        });
+
+        async function editNews(newsId) {
+            // Implement edit functionality: fetch news data, populate modal, update on submit
+            showNotification('Edit news functionality not yet implemented.', 'info');
+        }
+
+        async function deleteNews(newsId) {
+            if (!confirm('Are you sure you want to delete this news post?')) {
+                return;
+            }
+            try {
+                // Fetch media paths first to delete from storage
+                const { data: newsData, error: fetchError } = await supabaseClient
+                    .from('news')
+                    .select('media_urls')
+                    .eq('id', newsId)
+                    .single();
+
+                if (fetchError || !newsData) throw fetchError || new Error('News post not found.');
+
+                if (newsData.media_urls && newsData.media_urls.length > 0) {
+                    const { error: storageError } = await supabaseClient.storage
+                        .from('news-media')
+                        .remove(newsData.media_urls);
+                    if (storageError) console.error('Error deleting news media from storage:', storageError);
+                }
+
+                const { error } = await supabaseClient
+                    .from('news')
+                    .delete()
+                    .eq('id', newsId);
+                
+                if (error) throw error;
+                
+                showNotification('News deleted successfully!', 'success');
+                loadNews();
+            } catch (error) {
+                console.error('Error deleting news:', error);
+                showNotification('Error deleting news: ' + error.message, 'error');
+            }
+        }
+
+        // Payment Methods
+        async function loadPaymentMethods() {
+            try {
+                const { data: payments, error } = await supabaseClient
+                    .from('payment_methods')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('paymentMethods');
+                container.innerHTML = '';
+                
+                payments?.forEach(payment => {
+                    const paymentCard = document.createElement('div');
+                    paymentCard.className = 'bg-white rounded-lg shadow-lg p-6 hover-lift';
+                    paymentCard.innerHTML = `
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-semibold text-lg">${payment.name}</h4>
+                            <div class="flex space-x-2">
+                                <button onclick="editPayment('${payment.id}')" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deletePayment('${payment.id}')" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-3">${payment.account_number}</p>
+                        ${payment.qr_code_path ? `
+                            <div class="mb-3">
+                                <img src="${getStoragePublicUrl('qr-codes', payment.qr_code_path)}" alt="QR Code" class="w-32 h-32 object-contain rounded-lg">
+                            </div>
+                        ` : ''}
+                        <div class="flex justify-between items-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${payment.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${payment.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                            <button onclick="togglePaymentStatus('${payment.id}', ${payment.is_active})" class="text-sm text-purple-600 hover:text-purple-800">
+                                ${payment.is_active ? 'Deactivate' : 'Activate'}
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(paymentCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading payment methods:', error);
+                showNotification('Error loading payment methods', 'error');
+            }
+        }
+
+        document.getElementById('addPaymentBtn').addEventListener('click', function() {
+            document.getElementById('paymentModal').style.display = 'flex';
+        });
+
+        document.getElementById('browseQRBtn').addEventListener('click', function() {
+            document.getElementById('paymentQRInput').click();
+        });
+
+        document.getElementById('paymentQRInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('qrPreview');
+            preview.innerHTML = '';
+            if (file) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-24 h-24 object-contain rounded-lg';
+                preview.appendChild(img);
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                let qrCodePath = null;
+                const qrFile = document.getElementById('paymentQRInput').files[0];
+                
+                if (qrFile) {
+                    const fileExt = qrFile.name.split('.').pop();
+                    const fileName = `qr-codes/${Date.now()}.${fileExt}`;
+                    
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('qr-codes')
+                        .upload(fileName, qrFile);
+                    
+                    if (uploadError) throw uploadError;
+                    qrCodePath = uploadData.path;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('payment_methods')
+                    .insert([{
+                        name: document.getElementById('paymentName').value,
+                        account_number: document.getElementById('paymentAccount').value,
+                        qr_code_path: qrCodePath,
+                        is_active: document.getElementById('paymentActive').checked,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (error) throw error;
+                
+                showNotification('Payment method added successfully!', 'success');
+                closeModal('paymentModal');
+                loadPaymentMethods();
+                
+            } catch (error) {
+                console.error('Error adding payment method:', error);
+                showNotification('Error adding payment method: ' + error.message, 'error');
+            }
+        });
+
+        async function editPayment(paymentId) {
+            // Implement edit functionality
+            showNotification('Edit payment method functionality not yet implemented.', 'info');
+        }
+
+        async function deletePayment(paymentId) {
+            if (!confirm('Are you sure you want to delete this payment method?')) {
+                return;
+            }
+            try {
+                // Fetch QR code path to delete from storage
+                const { data: paymentData, error: fetchError } = await supabaseClient
+                    .from('payment_methods')
+                    .select('qr_code_path')
+                    .eq('id', paymentId)
+                    .single();
+
+                if (fetchError || !paymentData) throw fetchError || new Error('Payment method not found.');
+
+                if (paymentData.qr_code_path) {
+                    const { error: storageError } = await supabaseClient.storage
+                        .from('qr-codes')
+                        .remove([paymentData.qr_code_path]);
+                    if (storageError) console.error('Error deleting QR code from storage:', storageError);
+                }
+
+                const { error } = await supabaseClient
+                    .from('payment_methods')
+                    .delete()
+                    .eq('id', paymentId);
+                
+                if (error) throw error;
+                
+                showNotification('Payment method deleted successfully!', 'success');
+                loadPaymentMethods();
+            } catch (error) {
+                console.error('Error deleting payment method:', error);
+                showNotification('Error deleting payment method: ' + error.message, 'error');
+            }
+        }
+
+        async function togglePaymentStatus(paymentId, currentStatus) {
+            try {
+                const { error } = await supabaseClient
+                    .from('payment_methods')
+                    .update({ is_active: !currentStatus })
+                    .eq('id', paymentId);
+                
+                if (error) throw error;
+                
+                showNotification(`Payment method ${!currentStatus ? 'activated' : 'deactivated'}!`, 'success');
+                loadPaymentMethods();
+            } catch (error) {
+                console.error('Error toggling payment status:', error);
+                showNotification('Error toggling payment status: ' + error.message, 'error');
+            }
+        }
+
+        // Users Management
+        async function loadUsers() {
+            try {
+                const { data: users, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+                
+                users?.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="${user.avatar || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%23667eea"/><circle cx="50" cy="35" r="15" fill="white"/><path d="M20 80 Q50 60 80 80" fill="white"/></svg>'}" alt="User Avatar">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${user.name || 'N/A'}</div>
+                                    <div class="text-sm text-gray-500">${user.username || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.phone}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.country}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.is_banned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${user.is_banned ? 'Banned' : 'Active'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${new Date(user.created_at).toLocaleDateString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="toggleUserBan('${user.id}', ${user.is_banned})" class="text-${user.is_banned ? 'green' : 'red'}-600 hover:text-${user.is_banned ? 'green' : 'red'}-900 mr-3">
+                                ${user.is_banned ? 'Unban' : 'Ban'}
+                            </button>
+                            <button onclick="viewUser('${user.id}')" class="text-indigo-600 hover:text-indigo-900">View</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showNotification('Error loading users', 'error');
+            }
+        }
+
+        async function toggleUserBan(userId, currentBanStatus) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .update({ is_banned: !currentBanStatus })
+                    .eq('id', userId);
+                
+                if (error) throw error;
+                
+                showNotification(`User ${!currentBanStatus ? 'banned' : 'unbanned'} successfully!`, 'success');
+                loadUsers();
+                loadDashboardStats(); // Update active users count
+                
+            } catch (error) {
+                console.error('Error updating user status:', error);
+                showNotification('Error updating user status: ' + error.message, 'error');
+            }
+        }
+
+        async function viewUser(userId) {
+            // Implement view user details functionality
+            showNotification('View user details functionality not yet implemented.', 'info');
+        }
+
+        // Orders Management
+        async function loadOrders() {
+            try {
+                const { data: orders, error } = await supabaseClient
+                    .from('purchases')
+                    .select(`
+                        *,
+                        users (name, phone),
+                        files (name)
+                    `)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const tbody = document.getElementById('ordersTableBody');
+                tbody.innerHTML = '';
+                
+                orders?.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                            #${order.id.substring(0, 8)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${order.users?.name || 'N/A'}<br>
+                            <span class="text-gray-500">${order.users?.phone || 'N/A'}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${order.files?.name || 'N/A'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            $${order.amount || 0}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}">
+                                ${order.status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${new Date(order.created_at).toLocaleDateString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="viewOrder('${order.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                            ${order.status === 'pending' ? `
+                                <button onclick="approveOrder('${order.id}')" class="text-green-600 hover:text-green-900 mr-3">Approve</button>
+                                <button onclick="rejectOrder('${order.id}')" class="text-red-600 hover:text-red-900">Reject</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showNotification('Error loading orders', 'error');
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'pending': return 'bg-yellow-100 text-yellow-800';
+                case 'approved': return 'bg-green-100 text-green-800';
+                case 'rejected': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        async function approveOrder(orderId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('purchases')
+                    .update({ status: 'approved' })
+                    .eq('id', orderId);
+                
+                if (error) throw error;
+                
+                showNotification('Order approved successfully!', 'success');
+                loadOrders();
+                loadDashboardStats();
+                
+            } catch (error) {
+                console.error('Error approving order:', error);
+                showNotification('Error approving order: ' + error.message, 'error');
+            }
+        }
+
+        async function rejectOrder(orderId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('purchases')
+                    .update({ status: 'rejected' })
+                    .eq('id', orderId);
+                
+                if (error) throw error;
+                
+                showNotification('Order rejected', 'info');
+                loadOrders();
+                loadDashboardStats();
+                
+            } catch (error) {
+                console.error('Error rejecting order:', error);
+                showNotification('Error rejecting order: ' + error.message, 'error');
+            }
+        }
+
+        async function viewOrder(orderId) {
+            // Implement view order details functionality
+            showNotification('View order details functionality not yet implemented.', 'info');
+        }
+
+        // Support Chat
+        async function loadSupportChats() {
+            try {
+                // Fetch distinct users who have sent support messages
+                const { data: distinctUsers, error: distinctError } = await supabaseClient
+                    .from('support_messages')
+                    .select('user_id')
+                    .distinct();
+
+                if (distinctError) throw distinctError;
+
+                const userIds = distinctUsers.map(u => u.user_id);
+
+                if (userIds.length === 0) {
+                    document.getElementById('chatList').innerHTML = '<p class="text-gray-600 text-center py-4">No active conversations.</p>';
+                    document.getElementById('activeChatCount').textContent = 0;
+                    return;
+                }
+
+                // Fetch user details for these distinct users
+                const { data: usersWithChats, error: usersError } = await supabaseClient
+                    .from('users')
+                    .select('id, name, phone') // Assuming avatar is not stored in users table for now
+                    .in('id', userIds);
+
+                if (usersError) throw usersError;
+
+                const chatListContainer = document.getElementById('chatList');
+                chatListContainer.innerHTML = '';
+                
+                for (const user of usersWithChats) {
+                    // Get the last message for each user
+                    const { data: lastMessage, error: msgError } = await supabaseClient
+                        .from('support_messages')
+                        .select('content, created_at')
+                        .eq('user_id', user.id)
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .single();
+
+                    if (msgError && msgError.code !== 'PGRST116') console.error('Error fetching last message:', msgError);
+
+                    const chatItem = document.createElement('div');
+                    chatItem.className = 'p-3 rounded-lg hover:bg-gray-50 cursor-pointer';
+                    chatItem.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23667eea'/><circle cx='50' cy='35' r='15' fill='white'/><path d='M20 80 Q50 60 80 80' fill='white'/></svg>" alt="User Avatar" class="w-10 h-10 rounded-full">
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h5 class="font-medium text-sm">${user.name || 'User'}</h5>
+                                    <span class="text-xs text-gray-500">${lastMessage ? formatTime(lastMessage.created_at) : ''}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 truncate">${lastMessage?.content || 'No messages yet'}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    chatItem.addEventListener('click', () => loadChatMessages(user.id, user));
+                    chatListContainer.appendChild(chatItem);
+                }
+                
+                document.getElementById('activeChatCount').textContent = usersWithChats?.length || 0;
+                
+            } catch (error) {
+                console.error('Error loading support chats:', error);
+                showNotification('Error loading support chats', 'error');
+            }
+        }
+
+        async function loadChatMessages(userId, user) {
+            currentChatUser = { userId, user };
+            
+            // Update chat header
+            document.getElementById('currentChatAvatar').src = user?.avatar || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%23667eea"/><circle cx="50" cy="35" r="15" fill="white"/><path d="M20 80 Q50 60 80 80" fill="white"/></svg>';
+            document.getElementById('currentChatAvatar').style.display = 'block';
+            document.getElementById('currentChatName').textContent = user?.name || 'User';
+            document.getElementById('currentChatStatus').textContent = user?.phone || '';
+            document.getElementById('chatInput').style.display = 'flex'; // Changed to flex for input
+            
+            try {
+                const { data: messages, error } = await supabaseClient
+                    .from('support_messages')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: true });
+                
+                if (error) throw error;
+                
+                const messagesContainer = document.getElementById('chatMessages');
+                messagesContainer.innerHTML = '';
+                
+                messages?.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `mb-4 flex ${message.is_admin_message ? 'justify-end' : 'justify-start'}`;
+                    messageDiv.innerHTML = `
+                        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.is_admin_message ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'} chat-bubble">
+                            <p>${message.content}</p>
+                            <p class="text-xs mt-1 opacity-75">${formatTime(message.created_at)}</p>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(messageDiv);
+                });
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+            } catch (error) {
+                console.error('Error loading chat messages:', error);
+                showNotification('Error loading chat messages', 'error');
+            }
+        }
+
+        document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message || !currentChatUser) return;
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('support_messages')
+                    .insert([{
+                        user_id: currentChatUser.userId,
+                        content: message,
+                        is_admin_message: true, // Message from admin
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (error) throw error;
+                
+                messageInput.value = '';
+                loadChatMessages(currentChatUser.userId, currentChatUser.user);
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showNotification('Error sending message: ' + error.message, 'error');
+            }
+        }
+
+        // About Settings
+        async function loadAboutItems() {
+            try {
+                const { data: items, error } = await supabaseClient
+                    .from('about_content')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('aboutItems');
+                container.innerHTML = '';
+                
+                items?.forEach(item => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'bg-white rounded-lg shadow-lg p-6 hover-lift';
+                    itemCard.innerHTML = `
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center space-x-3">
+                                ${item.icon_url ? `
+                                    <img src="${getStoragePublicUrl('about-icons', item.icon_url)}" alt="Icon" class="w-12 h-12 object-contain rounded-lg">
+                                ` : `
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-link text-purple-600"></i>
+                                    </div>
+                                `}
+                                <div>
+                                    <h4 class="font-semibold text-lg">${item.name}</h4>
+                                    <a href="${item.link}" target="_blank" class="text-purple-600 hover:text-purple-800 text-sm">
+                                        ${item.link}
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editAbout('${item.id}')" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteAbout('${item.id}')" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(itemCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading about items:', error);
+                showNotification('Error loading about items', 'error');
+            }
+        }
+
+        document.getElementById('addAboutBtn').addEventListener('click', function() {
+            document.getElementById('aboutModal').style.display = 'flex';
+        });
+
+        document.getElementById('browseIconBtn').addEventListener('click', function() {
+            document.getElementById('aboutIconInput').click();
+        });
+
+        document.getElementById('aboutIconInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('iconPreview');
+            preview.innerHTML = '';
+            if (file) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-12 h-12 object-contain rounded-lg';
+                preview.appendChild(img);
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        document.getElementById('aboutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                let iconUrl = null;
+                const iconFile = document.getElementById('aboutIconInput').files[0];
+                
+                if (iconFile) {
+                    const fileExt = iconFile.name.split('.').pop();
+                    const fileName = `about-icons/${Date.now()}.${fileExt}`;
+                    
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('about-icons')
+                        .upload(fileName, iconFile);
+                    
+                    if (uploadError) throw uploadError;
+                    iconUrl = uploadData.path;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('about_content')
+                    .insert([{
+                        name: document.getElementById('aboutName').value,
+                        link: document.getElementById('aboutLink').value,
+                        icon_url: iconUrl,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (error) throw error;
+                
+                showNotification('About item added successfully!', 'success');
+                closeModal('aboutModal');
+                loadAboutItems();
+                
+            } catch (error) {
+                console.error('Error adding about item:', error);
+                showNotification('Error adding about item: ' + error.message, 'error');
+            }
+        });
+
+        async function editAbout(aboutId) {
+            // Implement edit functionality
+            showNotification('Edit about item functionality not yet implemented.', 'info');
+        }
+
+        async function deleteAbout(aboutId) {
+            if (!confirm('Are you sure you want to delete this about item?')) {
+                return;
+            }
+            try {
+                // Fetch icon path to delete from storage
+                const { data: aboutData, error: fetchError } = await supabaseClient
+                    .from('about_content')
+                    .select('icon_url')
+                    .eq('id', aboutId)
+                    .single();
+
+                if (fetchError || !aboutData) throw fetchError || new Error('About item not found.');
+
+                if (aboutData.icon_url) {
+                    const { error: storageError } = await supabaseClient.storage
+                        .from('about-icons')
+                        .remove([aboutData.icon_url]);
+                    if (storageError) console.error('Error deleting icon from storage:', storageError);
+                }
+
+                const { error } = await supabaseClient
+                    .from('about_content')
+                    .delete()
+                    .eq('id', aboutId);
+                
+                if (error) throw error;
+                
+                showNotification('About item deleted successfully!', 'success');
+                loadAboutItems();
+            } catch (error) {
+                console.error('Error deleting about item:', error);
+                showNotification('Error deleting about item: ' + error.message, 'error');
+            }
+        }
+
+        // Utility Functions
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            return date.toLocaleDateString();
+        }
+
+        function getStoragePublicUrl(bucketName, path) {
+            return `${SUPABASE_URL}/storage/v1/object/public/${bucketName}/${path}`;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification p-4 rounded-lg shadow-lg text-white max-w-sm ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('notificationContainer').appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Modal Functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            
+            // Reset forms
+            const modal = document.getElementById(modalId);
+            const forms = modal.querySelectorAll('form');
+            forms.forEach(form => form.reset());
+            
+            // Hide previews
+            const previews = modal.querySelectorAll('[id$="Preview"]');
+            previews.forEach(preview => {
+                preview.innerHTML = ''; // Clear content
+                preview.style.display = 'none';
+            });
+        }
+
+        // Modal close handlers
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modal = this.closest('.modal-overlay');
+                if (modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        // Real-time Updates
+        function startRealTimeUpdates() {
+            // Unsubscribe from previous channels if any
+            supabaseClient.removeAllChannels();
+
+            // Subscribe to orders changes
+            supabaseClient
+                .channel('purchases_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'purchases' }, payload => {
+                    console.log('Realtime: Purchase changed!', payload);
+                    loadOrders();
+                    loadDashboardStats();
+                })
+                .subscribe();
+            
+            // Subscribe to support messages (all messages for admin)
+            supabaseClient
+                .channel('support_messages_all')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'support_messages' }, payload => {
+                    console.log('Realtime: New support message (for admin)!', payload);
+                    loadSupportChats(); // Reload chat list to show new conversations
+                    if (currentChatUser && payload.new.user_id === currentChatUser.userId) {
+                        loadChatMessages(currentChatUser.userId, currentChatUser.user); // Reload current chat if it's the same user
+                    }
+                })
+                .subscribe();
+
+            // Subscribe to files changes
+            supabaseClient
+                .channel('files_changes_admin')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'files' }, payload => {
+                    console.log('Realtime: File changed (for admin)!', payload);
+                    loadFiles();
+                    loadDashboardStats();
+                    initializeCharts(); // Update charts if file data affects them
+                })
+                .subscribe();
+
+            // Subscribe to users changes
+            supabaseClient
+                .channel('users_changes_admin')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, payload => {
+                    console.log('Realtime: User changed (for admin)!', payload);
+                    loadUsers();
+                    loadDashboardStats();
+                    initializeCharts(); // Update charts if user data affects them
+                })
+                .subscribe();
+
+            // Subscribe to news changes
+            supabaseClient
+                .channel('news_changes_admin')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'news' }, payload => {
+                    console.log('Realtime: News changed (for admin)!', payload);
+                    loadNews();
+                })
+                .subscribe();
+
+            // Subscribe to payment methods changes
+            supabaseClient
+                .channel('payment_methods_changes_admin')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'payment_methods' }, payload => {
+                    console.log('Realtime: Payment method changed (for admin)!', payload);
+                    loadPaymentMethods();
+                })
+                .subscribe();
+
+            // Subscribe to about content changes
+            supabaseClient
+                .channel('about_content_changes_admin')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'about_content' }, payload => {
+                    console.log('Realtime: About content changed (for admin)!', payload);
+                    loadAboutItems();
+                })
+                .subscribe();
+        }
+
+        // Search and Filter Functions
+        document.getElementById('fileSearch')?.addEventListener('input', function() {
+            filterFiles();
+        });
+
+        document.getElementById('fileTypeFilter')?.addEventListener('change', function() {
+            filterFiles();
+        });
+
+        function filterFiles() {
+            const searchTerm = document.getElementById('fileSearch').value.toLowerCase();
+            const typeFilter = document.getElementById('fileTypeFilter').value;
+            const rows = document.querySelectorAll('#filesTableBody tr');
+            
+            rows.forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const type = row.cells[1].textContent.toLowerCase();
+                
+                const matchesSearch = name.includes(searchTerm);
+                const matchesType = !typeFilter || type.includes(typeFilter);
+                
+                row.style.display = matchesSearch && matchesType ? '' : 'none';
+            });
+        }
+
+        document.getElementById('userSearch')?.addEventListener('input', function() {
+            filterUsers();
+        });
+
+        document.getElementById('userStatusFilter')?.addEventListener('change', function() {
+            filterUsers();
+        });
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('userStatusFilter').value;
+            const rows = document.querySelectorAll('#usersTableBody tr');
+
+            rows.forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const phone = row.cells[1].textContent.toLowerCase();
+                const status = row.cells[3].textContent.toLowerCase();
+
+                const matchesSearch = name.includes(searchTerm) || phone.includes(searchTerm);
+                const matchesStatus = !statusFilter || status.includes(statusFilter);
+
+                row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+            });
+        }
+
+        document.getElementById('orderStatusFilter')?.addEventListener('change', function() {
+            filterOrders();
+        });
+
+        function filterOrders() {
+            const statusFilter = document.getElementById('orderStatusFilter').value;
+            const rows = document.querySelectorAll('#ordersTableBody tr');
+
+            rows.forEach(row => {
+                const status = row.cells[4].textContent.toLowerCase();
+                const matchesStatus = !statusFilter || status.includes(statusFilter);
+                row.style.display = matchesStatus ? '' : 'none';
+            });
+        }
+
+        // File drag and drop
+        document.querySelectorAll('.file-upload-area').forEach(area => {
+            area.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            
+            area.addEventListener('dragleave', function() {
+                this.classList.remove('dragover');
+            });
+            
+            area.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const input = this.querySelector('input[type="file"]');
+                    if (input) {
+                        input.files = files;
+                        // Trigger change event manually for preview functions
+                        const event = new Event('change', { bubbles: true });
+                        input.dispatchEvent(event);
+                    }
+                }
+            });
+        });
+
+        // Admin Profile Management
+        document.getElementById('profileForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const profileData = {
+                    username: document.getElementById('profileUsername').value,
+                    name: document.getElementById('profileName').value,
+                    email: document.getElementById('profileEmail').value
+                };
+                
+                const newPassword = document.getElementById('profilePassword').value;
+                if (newPassword) {
+                    // Hash the new password using the PostgreSQL function
+                    const { data: hashedPassword, error: hashError } = await supabaseClient.rpc('hash_password', { password_to_hash: newPassword });
+                    if (hashError) throw hashError;
+                    profileData.hashed_password = hashedPassword;
+                }
+                
+                // Update admin profile in the 'users' table
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .update(profileData)
+                    .eq('id', currentAdmin.id); // Ensure only the current admin's profile is updated
+                
+                if (error) throw error;
+
+                // Update local admin session data
+                currentAdmin = { ...currentAdmin, ...profileData };
+                localStorage.setItem('adminSession', JSON.stringify(currentAdmin));
+                
+                // Update UI
+                document.getElementById('adminName').textContent = currentAdmin.name;
+                
+                showNotification('Profile updated successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showNotification('Error updating profile: ' + error.message, 'error');
+            }
+        });
+
+        // Initialize profile form with current data
+        function initializeProfileForm() {
+            if (currentAdmin) {
+                document.getElementById('profileUsername').value = currentAdmin.username || '';
+                document.getElementById('profileName').value = currentAdmin.name || '';
+                document.getElementById('profileEmail').value = currentAdmin.email || '';
+                document.getElementById('profilePassword').value = ''; // Clear password field
+            }
+        }
+
+        // Call this when profile section is shown
+        document.querySelector('[data-section="profile"]').addEventListener('click', function() {
+            setTimeout(initializeProfileForm, 100);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Esc to close modals
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    if (modal.style.display !== 'none') {
+                        closeModal(modal.id);
+                    }
+                });
+            }
+            
+            // Ctrl/Cmd + Enter to send message in chat
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                const messageInput = document.getElementById('messageInput');
+                if (messageInput === document.activeElement) {
+                    sendMessage();
+                }
+            }
+        });
+
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            if (document.getElementById('dashboard').style.display !== 'none') {
+                loadDashboardStats();
+                initializeCharts(); // Refresh charts data
+            }
+        }, 30000);
+
+        // Initialize tooltips and other UI enhancements
+        function initializeUIEnhancements() {
+            // Add ripple effect to buttons
+            document.querySelectorAll('.ripple-effect').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
+
+        // Call UI enhancements after DOM is loaded
+        setTimeout(initializeUIEnhancements, 1000);
+    </script>
+</body>
+</html>
