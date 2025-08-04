@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PG-OPPER - Digital Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .myanmar-gradient {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .myanmar-map {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            position: relative;
+            animation: spin 2s linear infinite;
+        }
+
+        .myanmar-map::before {
+            content: '🇲🇲';
+            font-size: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tab-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .chat-bubble {
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble.sent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            border-radius: 18px 18px 5px 18px;
+        }
+
+        .chat-bubble.received {
+            background: #f1f1f1;
+            color: #333;
+            margin-right: auto;
+            border-radius: 18px 18px 18px 5px;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            40% { color: black; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            60% { text-shadow: .25em 0 0 black, .5em 0 0 rgba(0,0,0,0); }
+            80%, 100% { text-shadow: .25em 0 0 black, .5em 0 0 black; }
+        }
+
+        .news-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .file-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .file-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .payment-option {
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover, .payment-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="myanmar-gradient min-h-screen">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 z-50 flex items-center justify-center myanmar-gradient">
+        <div class="text-center">
+            <div class="myanmar-map mb-4"></div>
+            <h2 class="text-white text-2xl font-bold mb-2">PG-OPPER</h2>
+            <p class="text-white opacity-80">Loading<span class="loading-dots"></span></p>
+        </div>
+    </div>
+
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-2xl p-8 w-full max-w-md">
+            <!-- Login Form -->
+            <div id="loginForm" class="fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-2">PG-OPPER</h1>
+                    <p class="text-white opacity-80">Welcome Back | ပြန်လည်ကြိုဆိုပါသည်</p>
+                </div>
+                
+                <form id="loginFormElement" class="space-y-6">
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Country | နိုင်ငံ</label>
+                        <select id="loginCountry" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="+95">🇲🇲 Myanmar (+95)</option>
+                            <option value="+86">🇨🇳 China (+86)</option>
+                            <option value="+65">🇸🇬 Singapore (+65)</option>
+                            <option value="+66">🇹🇭 Thailand (+66)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Phone Number | ဖုန်းနံပါတ်</label>
+                        <input type="tel" id="loginPhone" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter phone number">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Password | စကားဝှက်</label>
+                        <input type="password" id="loginPassword" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter password">
+                    </div>
+                    
+                    <button type="submit" class="w-full btn-primary text-white font-semibold py-3 rounded-lg">
+                        Login | အကောင့်ဝင်ရန်
+                    </button>
+                </form>
+                
+                <p class="text-center text-white mt-6">
+                    Don't have an account? | အကောင့်မရှိဘူးလား?
+                    <button id="showSignup" class="text-yellow-300 font-semibold ml-1">Sign Up | အကောင့်ဖွင့်ရန်</button>
+                </p>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="hidden">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
+                    <p class="text-white opacity-80">Join PG-OPPER | PG-OPPER သို့ ဝင်ရောက်ပါ</p>
+                </div>
+                
+                <form id="signupFormElement" class="space-y-6">
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Name | အမည်</label>
+                        <input type="text" id="signupName" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Country | နိုင်ငံ</label>
+                        <select id="signupCountry" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="+95">🇲🇲 Myanmar (+95)</option>
+                            <option value="+86">🇨🇳 China (+86)</option>
+                            <option value="+65">🇸🇬 Singapore (+65)</option>
+                            <option value="+66">🇹🇭 Thailand (+66)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Phone Number | ဖုန်းနံပါတ်</label>
+                        <input type="tel" id="signupPhone" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter phone number">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Password | စကားဝှက်</label>
+                        <input type="password" id="signupPassword" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Create password">
+                    </div>
+                    
+                    <button type="submit" class="w-full btn-primary text-white font-semibold py-3 rounded-lg">
+                        Create Account | အကောင့်ဖန်တီးရန်
+                    </button>
+                </form>
+                
+                <p class="text-center text-white mt-6">
+                    Already have an account? | အကောင့်ရှိပြီးလား?
+                    <button id="showLogin" class="text-yellow-300 font-semibold ml-1">Login | အကောင့်ဝင်ရန်</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden min-h-screen pb-20">
+        <!-- Header -->
+        <header class="glass-effect text-white p-4 sticky top-0 z-30">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold">PG-OPPER</h1>
+                <div class="flex items-center space-x-4">
+                    <button id="searchBtn" class="p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-search text-lg"></i>
+                    </button>
+                    <button id="profileBtn" class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                        <i class="fas fa-user text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Pages -->
+        <div class="container mx-auto px-4 py-6">
+            <!-- Home Page -->
+            <div id="homePage" class="page fade-in">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">Digital Store | ဒစ်ဂျစ်တယ် ဆိုင်</h2>
+                    <p class="text-white opacity-80">Download files and apps | ဖိုင်များနှင့် အက်ပ်များ ဒေါင်းလုဒ်လုပ်ပါ</p>
+                </div>
+
+                <div id="fileGrid" class="file-grid">
+                    <!-- Files will be loaded here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="text-center py-12">
+                    <i class="fas fa-download text-6xl text-white opacity-50 mb-4"></i>
+                    <h3 class="text-white text-xl font-semibold mb-2">No Files Available</h3>
+                    <p class="text-white opacity-70">Files will appear here when uploaded by admin</p>
+                </div>
+            </div>
+
+            <!-- Chat Page -->
+            <div id="chatPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">Messages | စာများ</h2>
+                    <p class="text-white opacity-80">Chat with other users | အခြားအသုံးပြုသူများနှင့် စကားပြောရန်</p>
+                </div>
+
+                <!-- Chat List -->
+                <div id="chatList" class="space-y-3">
+                    <!-- Chat items will be loaded here -->
+                </div>
+
+                <!-- Empty Chat State -->
+                <div id="emptyChatState" class="text-center py-12">
+                    <i class="fas fa-comments text-6xl text-white opacity-50 mb-4"></i>
+                    <h3 class="text-white text-xl font-semibold mb-2">No Conversations</h3>
+                    <p class="text-white opacity-70">Start chatting with other users</p>
+                </div>
+            </div>
+
+            <!-- News Page -->
+            <div id="newsPage" class="page hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-white text-2xl font-bold mb-2">News Feed | သတင်းများ</h2>
+                        <p class="text-white opacity-80">Latest updates and posts | နောက်ဆုံးပေါ် သတင်းများ</p>
+                    </div>
+                    <button id="createNewsBtn" class="btn-primary text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Post
+                    </button>
+                </div>
+
+                <div id="newsFeed" class="space-y-6">
+                    <!-- News items will be loaded here -->
+                </div>
+
+                <!-- Empty News State -->
+                <div id="emptyNewsState" class="text-center py-12">
+                    <i class="fas fa-newspaper text-6xl text-white opacity-50 mb-4"></i>
+                    <h3 class="text-white text-xl font-semibold mb-2">No News Yet</h3>
+                    <p class="text-white opacity-70">Be the first to share something!</p>
+                </div>
+            </div>
+
+            <!-- Support Page -->
+            <div id="supportPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">Support | အကူအညီ</h2>
+                    <p class="text-white opacity-80">Get help from admin | အက်ဒမင်ထံမှ အကူအညီယူပါ</p>
+                </div>
+
+                <!-- Support Chat -->
+                <div class="glass-effect rounded-xl p-4 mb-4" style="height: 400px; overflow-y: auto;" id="supportChatContainer">
+                    <div id="supportMessages" class="space-y-3">
+                        <!-- Support messages will appear here -->
+                    </div>
+                </div>
+
+                <!-- Support Message Input -->
+                <div class="glass-effect rounded-xl p-4">
+                    <div class="flex space-x-3">
+                        <input type="text" id="supportMessageInput" class="flex-1 p-3 rounded-lg border-0 bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70" placeholder="Type your message...">
+                        <button id="sendSupportMessage" class="btn-primary px-4 py-3 rounded-lg">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Page -->
+            <div id="aboutPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">About Us | ကျွန်ုပ်တို့အကြောင်း</h2>
+                    <p class="text-white opacity-80">Learn more about PG-OPPER</p>
+                </div>
+
+                <div id="aboutContent" class="space-y-6">
+                    <!-- About content will be loaded here -->
+                </div>
+
+                <!-- Default About Content -->
+                <div id="defaultAbout" class="glass-effect rounded-xl p-6">
+                    <h3 class="text-white text-xl font-bold mb-4">PG-OPPER Digital Marketplace</h3>
+                    <p class="text-white opacity-90 mb-4">
+                        PG-OPPER is your premier digital marketplace for files, applications, and digital content. 
+                        We provide a secure platform for users to discover, purchase, and download digital products.
+                    </p>
+                    <p class="text-white opacity-90">
+                        ကျွန်ုပ်တို့သည် ဒစ်ဂျစ်တယ်ဖိုင်များ၊ အက်ပ်လီကေးရှင်းများနှင့် ဒစ်ဂျစ်တယ်အကြောင်းအရာများအတွက် 
+                        ထိပ်တန်းစျေးကွက်ဖြစ်ပါသည်။
+                    </p>
+                </div>
+            </div>
+
+            <!-- Mi (Profile) Page -->
+            <div id="miPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">My Profile | ကျွန်ုပ်၏ပရိုဖိုင်</h2>
+                    <p class="text-white opacity-80">Manage your account | သင့်အကောင့်ကို စီမံပါ</p>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="glass-effect rounded-xl p-6 mb-6">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                            <i class="fas fa-user text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white text-xl font-bold" id="profileName">User</h3>
+                            <p class="text-white opacity-70" id="profilePhone">+95xxxxxxxxx</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <h4 class="text-white text-2xl font-bold" id="purchaseCount">0</h4>
+                            <p class="text-white opacity-70">Purchases</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <h4 class="text-white text-2xl font-bold" id="newsCount">0</h4>
+                            <p class="text-white opacity-70">News Posts</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase History -->
+                <div class="glass-effect rounded-xl p-6 mb-6">
+                    <h3 class="text-white text-lg font-bold mb-4">Purchase History | ဝယ်ယူမှုမှတ်တမ်း</h3>
+                    <div id="purchaseHistory" class="space-y-3">
+                        <!-- Purchase history will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="space-y-3">
+                    <button id="createNewsProfileBtn" class="w-full glass-effect text-white p-4 rounded-xl text-left">
+                        <i class="fas fa-newspaper mr-3"></i>Create News Profile | သတင်းပရိုဖိုင်ဖန်တီးရန်
+                    </button>
+                    <button id="logoutBtn" class="w-full bg-red-500 bg-opacity-80 text-white p-4 rounded-xl text-left">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Logout | ထွက်ရန်
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav fixed bottom-0 left-0 right-0 p-4 z-20">
+            <div class="flex justify-around">
+                <button class="nav-item active flex flex-col items-center space-y-1" data-page="home">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs">Home</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="chat">
+                    <i class="fas fa-comments text-xl"></i>
+                    <span class="text-xs">Chat</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="news">
+                    <i class="fas fa-newspaper text-xl"></i>
+                    <span class="text-xs">News</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="support">
+                    <i class="fas fa-headset text-xl"></i>
+                    <span class="text-xs">Support</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="about">
+                    <i class="fas fa-info-circle text-xl"></i>
+                    <span class="text-xs">About</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="mi">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-xs">Mi</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div id="purchaseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up">
+            <div class="text-center mb-6">
+                <h3 class="text-white text-xl font-bold mb-2">Purchase File</h3>
+                <p class="text-white opacity-80">Complete your purchase | သင့်ဝယ်ယူမှုကို ပြီးစီးအောင်လုပ်ပါ</p>
+            </div>
+
+            <div id="purchaseContent">
+                <!-- Purchase content will be loaded here -->
+            </div>
+
+            <div class="flex space-x-3 mt-6">
+                <button id="cancelPurchase" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
+                <button id="confirmPurchase" class="flex-1 btn-primary text-white py-3 rounded-lg">Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Profile Modal -->
+    <div id="newsProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up">
+            <div class="text-center mb-6">
+                <h3 class="text-white text-xl font-bold mb-2">Create News Profile</h3>
+                <p class="text-white opacity-80">Set up your news profile | သင့်သတင်းပရိုဖိုင်ကို ပြင်ဆင်ပါ</p>
+            </div>
+
+            <form id="newsProfileForm" class="space-y-4">
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Username</label>
+                    <input type="text" id="newsUsername" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter username">
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Display Name</label>
+                    <input type="text" id="newsDisplayName" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter display name">
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Profile Picture</label>
+                    <input type="file" id="newsProfilePicture" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" accept="image/*,.gif">
+                </div>
+
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" id="cancelNewsProfile" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
+                    <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-lg">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create News Modal -->
+    <div id="createNewsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up max-h-90vh overflow-y-auto">
+            <div class="text-center mb-6">
+                <h3 class="text-white text-xl font-bold mb-2">Create News Post</h3>
+                <p class="text-white opacity-80">Share something with the community</p>
+            </div>
+
+            <form id="createNewsForm" class="space-y-4">
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Title</label>
+                    <input type="text" id="newsTitle" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter news title">
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Content</label>
+                    <textarea id="newsContent" rows="4" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Write your news content..."></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Media Files</label>
+                    <input type="file" id="newsMedia" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" multiple accept="image/*,video/*,audio/*,.gif">
+                </div>
+
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" id="cancelCreateNews" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
+                    <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-lg">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://rmeudvhvqlddqqkiziyo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZXVkdmh2cWxkZHFxa2l6aXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTMxOTIsImV4cCI6MjA2OTU2OTE5Mn0.xFgMv-K5o5yyTpe4U2YJK5jC9GPJp98G4cgD9p5W4ak';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Global State
+        let currentUser = null; // Stores the user object from our custom 'users' table
+        let currentPage = 'home';
+        let files = [];
+        let news = [];
+        let chatList = [];
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check Supabase connection status
+            checkSupabaseConnection();
+
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                checkAuthStatus(); // Check custom authentication status
+            }, 3000);
+
+            initializeEventListeners();
+        });
+
+        // Check Supabase Connection Status
+        async function checkSupabaseConnection() {
+            try {
+                // Attempt a simple query to check connection
+                const { data, error } = await supabase.from('users').select('id').limit(1);
+                if (error) {
+                    console.error('Supabase Connection Error:', error.message);
+                    alert('Supabase connection failed! Please check your network or Supabase configuration.');
+                } else {
+                    console.log('Supabase connected successfully!');
+                }
+            } catch (e) {
+                console.error('Supabase Connection Exception:', e.message);
+                alert('Supabase connection failed! An unexpected error occurred.');
+            }
+        }
+
+        // Check Custom Authentication Status
+        async function checkAuthStatus() {
+            const userId = localStorage.getItem('user_id');
+            if (userId) {
+                try {
+                    const { data: user, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', userId)
+                        .single();
+
+                    if (error || !user) {
+                        console.error('Error fetching user data for session:', error?.message || 'User not found');
+                        localStorage.removeItem('user_id'); // Clear invalid session
+                        showAuthScreen();
+                        return;
+                    }
+                    currentUser = user;
+                    showMainApp();
+                } catch (error) {
+                    console.error('Error during session check:', error);
+                    localStorage.removeItem('user_id');
+                    showAuthScreen();
+                }
+            } else {
+                showAuthScreen();
+            }
+        }
+
+        function showAuthScreen() {
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            showLoginForm();
+        }
+
+        // Initialize Event Listeners
+        function initializeEventListeners() {
+            // Auth Forms
+            document.getElementById('showSignup').addEventListener('click', showSignupForm);
+            document.getElementById('showLogin').addEventListener('click', showLoginForm);
+            document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
+            document.getElementById('signupFormElement').addEventListener('submit', handleSignup);
+
+            // Bottom Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const page = e.currentTarget.dataset.page;
+                    switchPage(page);
+                });
+            });
+
+            // Modals
+            document.getElementById('cancelPurchase').addEventListener('click', closePurchaseModal);
+            document.getElementById('createNewsProfileBtn').addEventListener('click', showNewsProfileModal);
+            document.getElementById('cancelNewsProfile').addEventListener('click', closeNewsProfileModal);
+            document.getElementById('newsProfileForm').addEventListener('submit', handleCreateNewsProfile);
+            document.getElementById('createNewsBtn').addEventListener('click', showCreateNewsModal);
+            document.getElementById('cancelCreateNews').addEventListener('click', closeCreateNewsModal);
+            document.getElementById('createNewsForm').addEventListener('submit', handleCreateNews);
+
+            // Support Chat
+            document.getElementById('sendSupportMessage').addEventListener('click', sendSupportMessage);
+            document.getElementById('supportMessageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendSupportMessage();
+                }
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        }
+
+        // Custom Authentication Functions
+        function showSignupForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signupName').value;
+            const country = document.getElementById('signupCountry').value;
+            const phone = document.getElementById('signupPhone').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            const fullPhone = country + phone;
+
+            if (!name || !phone || !password) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            try {
+                // Check if phone already exists
+                const { data: existingUser, error: existingUserError } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('phone', fullPhone)
+                    .single();
+
+                if (existingUserError && existingUserError.code !== 'PGRST116') { // PGRST116 means no rows found
+                    throw existingUserError;
+                }
+                if (existingUser) {
+                    alert('Phone number already registered! | ဖုန်းနံပါတ်သည် မှတ်ပုံတင်ပြီးသားဖြစ်ပါသည်!');
+                    return;
+                }
+
+                // Hash the password using the PostgreSQL function
+                const { data: hashedPassword, error: hashError } = await supabase.rpc('hash_password', { password_to_hash: password });
+                if (hashError) throw hashError;
+
+                // Insert user data into our custom 'users' table
+                const { data: newUser, error: insertError } = await supabase
+                    .from('users')
+                    .insert([
+                        {
+                            name: name,
+                            phone: fullPhone,
+                            country: country,
+                            hashed_password: hashedPassword,
+                            created_at: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+
+                if (insertError) throw insertError;
+
+                alert('Account created successfully! Please login. | အကောင့်ဖန်တီးပြီးပါပြီ! ကျေးဇူးပြု၍ ဝင်ရောက်ပါ။');
+                showLoginForm();
+            } catch (error) {
+                console.error('Error creating account:', error);
+                alert('Error creating account: ' + error.message);
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const country = document.getElementById('loginCountry').value;
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const fullPhone = country + phone;
+
+            if (!phone || !password) {
+                alert('Please enter phone number and password.');
+                return;
+            }
+
+            try {
+                // Retrieve user by phone number
+                const { data: user, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('phone', fullPhone)
+                    .single();
+
+                if (userError || !user) {
+                    alert('Login failed: Invalid phone number or password.');
+                    return;
+                }
+
+                // Check password using the PostgreSQL function
+                const { data: passwordMatch, error: checkError } = await supabase.rpc('check_password', { 
+                    password_to_check: password, 
+                    hashed_password_in_db: user.hashed_password 
+                });
+
+                if (checkError || !passwordMatch) {
+                    alert('Login failed: Invalid phone number or password.');
+                    return;
+                }
+
+                if (user.is_banned) {
+                    alert('Your account has been banned. Please contact support.');
+                    return;
+                }
+
+                currentUser = user;
+                localStorage.setItem('user_id', user.id); // Store user ID for session
+                showMainApp();
+            } catch (error) {
+                console.error('Login failed:', error);
+                alert('Login failed: ' + error.message);
+            }
+        }
+
+        async function handleLogout() {
+            localStorage.removeItem('user_id'); // Clear user session
+            currentUser = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            showLoginForm();
+            alert('Logged out successfully!');
+        }
+
+        // Main App Functions
+        function showMainApp() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            loadUserProfile();
+            loadFiles();
+            loadNews();
+            loadAboutContent();
+            setupRealtimeSubscriptions(); // Setup real-time after user is authenticated
+        }
+
+        function switchPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            
+            // Show selected page
+            document.getElementById(page + 'Page').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+            
+            currentPage = page;
+
+            // Load page-specific content
+            if (page === 'chat') {
+                loadChatList();
+            } else if (page === 'news') {
+                loadNews();
+            } else if (page === 'support') {
+                loadSupportMessages();
+            }
+        }
+
+        // User Profile Functions
+        async function loadUserProfile() {
+            if (!currentUser) return;
+            try {
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error || !userData) {
+                    console.error('Error loading profile:', error?.message || 'User data not found');
+                    return;
+                }
+
+                document.getElementById('profileName').textContent = userData.name || 'User';
+                document.getElementById('profilePhone').textContent = userData.phone || '';
+
+                // Load purchase count
+                const { data: purchases, error: purchasesError } = await supabase
+                    .from('purchases')
+                    .select('id')
+                    .eq('user_id', currentUser.id);
+
+                if (purchasesError) throw purchasesError;
+                document.getElementById('purchaseCount').textContent = purchases?.length || 0;
+
+                // Load news count
+                const { data: userNewsProfiles, error: newsProfileError } = await supabase
+                    .from('news_profiles')
+                    .select('id')
+                    .eq('user_id', currentUser.id);
+                
+                if (newsProfileError) throw newsProfileError;
+
+                let totalNewsPosts = 0;
+                if (userNewsProfiles && userNewsProfiles.length > 0) {
+                    for (const profile of userNewsProfiles) {
+                        const { data: newsPosts, error: newsPostsError } = await supabase
+                            .from('news')
+                            .select('id')
+                            .eq('news_profile_id', profile.id);
+                        if (newsPostsError) throw newsPostsError;
+                        totalNewsPosts += newsPosts?.length || 0;
+                    }
+                }
+                document.getElementById('newsCount').textContent = totalNewsPosts;
+
+                loadPurchaseHistory();
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        async function loadPurchaseHistory() {
+            if (!currentUser) return;
+            try {
+                const { data: purchases, error } = await supabase
+                    .from('purchases')
+                    .select(`
+                        *,
+                        files (
+                            name,
+                            type,
+                            price
+                        )
+                    `)
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const historyContainer = document.getElementById('purchaseHistory');
+                historyContainer.innerHTML = '';
+
+                if (purchases && purchases.length > 0) {
+                    purchases.forEach(purchase => {
+                        const purchaseElement = document.createElement('div');
+                        purchaseElement.className = 'bg-white bg-opacity-20 rounded-lg p-3 flex justify-between items-center';
+                        purchaseElement.innerHTML = `
+                            <div>
+                                <h4 class="text-white font-semibold">${purchase.files?.name || 'Unknown File'}</h4>
+                                <p class="text-white opacity-70 text-sm">$${purchase.files?.price || '0.00'}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-green-400 text-sm font-semibold">${purchase.status}</span>
+                                <p class="text-white opacity-70 text-xs">${new Date(purchase.created_at).toLocaleDateString()}</p>
+                            </div>
+                        `;
+                        historyContainer.appendChild(purchaseElement);
+                    });
+                } else {
+                    historyContainer.innerHTML = '<p class="text-white opacity-70 text-center">No purchases yet</p>';
+                }
+            } catch (error) {
+                console.error('Error loading purchase history:', error);
+            }
+        }
+
+        // Files Functions
+        async function loadFiles() {
+            try {
+                const { data: filesData, error } = await supabase
+                    .from('files')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                files = filesData || [];
+                displayFiles();
+            } catch (error) {
+                console.error('Error loading files:', error);
+            }
+        }
+
+        function displayFiles() {
+            const fileGrid = document.getElementById('fileGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (files.length === 0) {
+                fileGrid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            fileGrid.innerHTML = '';
+
+            files.forEach(file => {
+                const fileElement = document.createElement('div');
+                fileElement.className = 'file-card card-hover';
+                fileElement.innerHTML = `
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
+                            <i class="fas ${getFileIcon(file.type)} text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">${file.name}</h3>
+                        <p class="text-gray-600 text-sm mb-3">${file.description}</p>
+                        <div class="text-lg font-bold text-purple-600 mb-3">$${file.price}</div>
+                        <button onclick="initiatesPurchase('${file.id}')" class="w-full btn-primary text-white py-2 rounded-lg text-sm">
+                            <i class="fas fa-download mr-2"></i>Download
+                        </button>
+                    </div>
+                `;
+                fileGrid.appendChild(fileElement);
+            });
+        }
+
+        function getFileIcon(fileType) {
+            const iconMap = {
+                'apk': 'fa-android',
+                'pdf': 'fa-file-pdf',
+                'doc': 'fa-file-word',
+                'zip': 'fa-file-archive',
+                'mp3': 'fa-file-audio',
+                'mp4': 'fa-file-video',
+                'image': 'fa-file-image',
+                'file': 'fa-file' // Default for generic files
+            };
+            return iconMap[fileType] || 'fa-file';
+        }
+
+        async function initiatesPurchase(fileId) {
+            if (!currentUser) {
+                alert('Please login to purchase files.');
+                showAuthScreen();
+                return;
+            }
+
+            const file = files.find(f => f.id === fileId);
+            if (!file) {
+                alert('File not found.');
+                return;
+            }
+
+            // Check if already purchased and approved
+            const { data: existingPurchase, error: existingPurchaseError } = await supabase
+                .from('purchases')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .eq('file_id', fileId)
+                .eq('status', 'approved')
+                .single();
+
+            if (existingPurchaseError && existingPurchaseError.code !== 'PGRST116') {
+                console.error('Error checking existing purchase:', existingPurchaseError);
+                alert('Error checking purchase status. Please try again.');
+                return;
+            }
+
+            if (existingPurchase) {
+                // Direct download if already approved
+                downloadFile(file);
+                return;
+            }
+
+            // Show purchase modal
+            showPurchaseModal(file);
+        }
+
+        function showPurchaseModal(file) {
+            const modal = document.getElementById('purchaseModal');
+            const content = document.getElementById('purchaseContent');
+            
+            content.innerHTML = `
+                <div class="text-center mb-4">
+                    <div class="w-20 h-20 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
+                        <i class="fas ${getFileIcon(file.type)} text-3xl text-white"></i>
+                    </div>
+                    <h4 class="text-white text-lg font-bold">${file.name}</h4>
+                    <p class="text-white opacity-80">${file.description}</p>
+                    <div class="text-2xl font-bold text-yellow-400 mt-2">$${file.price}</div>
+                </div>
+                
+                <div class="space-y-3">
+                    <h5 class="text-white font-semibold">Payment Methods:</h5>
+                    <div id="paymentMethodsContainer" class="space-y-2">
+                        <!-- Payment methods will be loaded here -->
+                    </div>
+                </div>
+            `;
+
+            // Load payment methods
+            loadPaymentMethodsForPurchase(file);
+
+            // Set up confirm purchase button
+            document.getElementById('confirmPurchase').onclick = () => confirmPurchase(file);
+
+            modal.classList.remove('hidden');
+        }
+
+        async function loadPaymentMethodsForPurchase(file) {
+            try {
+                const { data: paymentMethods, error } = await supabase
+                    .from('payment_methods')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('name', { ascending: true });
+
+                if (error) throw error;
+
+                const container = document.getElementById('paymentMethodsContainer');
+                container.innerHTML = '';
+
+                if (paymentMethods && paymentMethods.length > 0) {
+                    paymentMethods.forEach((method, index) => {
+                        const optionElement = document.createElement('div');
+                        optionElement.className = `payment-option ${index === 0 ? 'selected' : ''}`;
+                        optionElement.dataset.methodId = method.id;
+                        optionElement.innerHTML = `
+                            <h6 class="font-semibold text-white">${method.name}</h6>
+                            <p class="text-sm opacity-80 text-white">${method.account_number}</p>
+                            ${method.qr_code_path ? `<img src="${getStoragePublicUrl('qr-codes', method.qr_code_path)}" alt="QR Code" class="w-24 h-24 mt-2 rounded-lg">` : ''}
+                        `;
+                        optionElement.addEventListener('click', () => {
+                            container.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                            optionElement.classList.add('selected');
+                        });
+                        container.appendChild(optionElement);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-white opacity-70 text-center">No active payment methods available.</p>';
+                    document.getElementById('confirmPurchase').disabled = true;
+                }
+            } catch (error) {
+                console.error('Error loading payment methods for purchase:', error);
+                alert('Error loading payment methods.');
+            }
+        }
+
+        async function confirmPurchase(file) {
+            if (!currentUser) {
+                alert('You must be logged in to make a purchase.');
+                return;
+            }
+
+            const selectedMethod = document.querySelector('#paymentMethodsContainer .payment-option.selected');
+            if (!selectedMethod) {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('purchases')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            file_id: file.id,
+                            amount: file.price,
+                            status: 'pending', // Initial status is pending
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                alert('Purchase request submitted! Please complete the payment using the selected method. Your download will be available once approved by admin.');
+                closePurchaseModal();
+                loadPurchaseHistory(); // Refresh purchase history
+            } catch (error) {
+                console.error('Error confirming purchase:', error);
+                alert('Error submitting purchase: ' + error.message);
+            }
+        }
+
+        function closePurchaseModal() {
+            document.getElementById('purchaseModal').classList.add('hidden');
+        }
+
+        async function downloadFile(file) {
+            try {
+                // Get file URL from Supabase storage
+                const { data } = supabase.storage
+                    .from('files')
+                    .getPublicUrl(file.file_path);
+
+                // Create download link
+                const link = document.createElement('a');
+                link.href = data.publicUrl;
+                link.download = file.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert('File download started!');
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                alert('Error downloading file. Please try again.');
+            }
+        }
+
+        // News Functions
+        async function loadNews() {
+            try {
+                const { data: newsData, error } = await supabase
+                    .from('news')
+                    .select(`
+                        *,
+                        news_profiles (
+                            username,
+                            display_name,
+                            profile_picture_url
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                news = newsData || [];
+                displayNews();
+            } catch (error) {
+                console.error('Error loading news:', error);
+            }
+        }
+
+        function displayNews() {
+            const newsFeed = document.getElementById('newsFeed');
+            const emptyState = document.getElementById('emptyNewsState');
+
+            if (news.length === 0) {
+                newsFeed.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            newsFeed.innerHTML = '';
+
+            news.forEach(item => {
+                const newsElement = document.createElement('div');
+                newsElement.className = 'news-card glass-effect p-6';
+                newsElement.innerHTML = `
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                            ${item.news_profiles?.profile_picture_url ? 
+                                `<img src="${getStoragePublicUrl('news-profiles', item.news_profiles.profile_picture_url)}" class="w-full h-full rounded-full object-cover" alt="Profile Picture">` :
+                                `<i class="fas fa-user text-white"></i>`
+                            }
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold">${item.news_profiles?.display_name || 'Anonymous'}</h4>
+                            <p class="text-white opacity-70 text-sm">@${item.news_profiles?.username || 'anonymous'}</p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-white text-lg font-bold mb-2">${item.title}</h3>
+                    <p class="text-white opacity-90 mb-4">${item.content}</p>
+                    
+                    ${item.media_urls && item.media_urls.length > 0 ? `
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            ${item.media_urls.slice(0, 4).map(url => `
+                                <div class="rounded-lg overflow-hidden">
+                                    ${url.includes('.mp4') || url.includes('.mov') ? 
+                                        `<video controls class="w-full h-32 object-cover"><source src="${getStoragePublicUrl('news-media', url)}" type="video/mp4"></video>` :
+                                        `<img src="${getStoragePublicUrl('news-media', url)}" class="w-full h-32 object-cover" alt="News Media">`
+                                    }
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="flex items-center justify-between text-white opacity-70 text-sm">
+                        <span>${new Date(item.created_at).toLocaleDateString()}</span>
+                        <button onclick="shareNews('${item.id}')" class="hover:opacity-100 transition-opacity">
+                            <i class="fas fa-share mr-1"></i>Share
+                        </button>
+                    </div>
+                `;
+                newsFeed.appendChild(newsElement);
+            });
+        }
+
+        function showNewsProfileModal() {
+            if (!currentUser) {
+                alert('Please login to create a news profile.');
+                showAuthScreen();
+                return;
+            }
+            document.getElementById('newsProfileModal').classList.remove('hidden');
+        }
+
+        function closeNewsProfileModal() {
+            document.getElementById('newsProfileModal').classList.add('hidden');
+            document.getElementById('newsProfileForm').reset();
+        }
+
+        async function handleCreateNewsProfile(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+            
+            const username = document.getElementById('newsUsername').value;
+            const displayName = document.getElementById('newsDisplayName').value;
+            const profilePicture = document.getElementById('newsProfilePicture').files[0];
+
+            if (!username || !displayName) {
+                alert('Username and Display Name are required.');
+                return;
+            }
+
+            try {
+                // Check if username already exists
+                const { data: existingProfile, error: existingProfileError } = await supabase
+                    .from('news_profiles')
+                    .select('id')
+                    .eq('username', username)
+                    .single();
+
+                if (existingProfileError && existingProfileError.code !== 'PGRST116') {
+                    throw existingProfileError;
+                }
+                if (existingProfile) {
+                    alert('Username already exists! Please choose another.');
+                    return;
+                }
+
+                let profilePicturePath = null;
+
+                // Upload profile picture if provided
+                if (profilePicture) {
+                    const fileName = `${currentUser.id}/${Date.now()}-${profilePicture.name}`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('news-profiles')
+                        .upload(fileName, profilePicture);
+
+                    if (uploadError) throw uploadError;
+                    profilePicturePath = uploadData.path;
+                }
+
+                // Create news profile
+                const { error } = await supabase
+                    .from('news_profiles')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            username: username,
+                            display_name: displayName,
+                            profile_picture_url: profilePicturePath,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                alert('News profile created successfully!');
+                closeNewsProfileModal();
+                loadUserProfile(); // Refresh profile data
+            } catch (error) {
+                console.error('Error creating news profile:', error);
+                alert('Error creating news profile: ' + error.message);
+            }
+        }
+
+        function showCreateNewsModal() {
+            if (!currentUser) {
+                alert('Please login to create a news post.');
+                showAuthScreen();
+                return;
+            }
+            document.getElementById('createNewsModal').classList.remove('hidden');
+        }
+
+        function closeCreateNewsModal() {
+            document.getElementById('createNewsModal').classList.add('hidden');
+            document.getElementById('createNewsForm').reset();
+        }
+
+        async function handleCreateNews(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+            
+            const title = document.getElementById('newsTitle').value;
+            const content = document.getElementById('newsContent').value;
+            const mediaFiles = document.getElementById('newsMedia').files;
+
+            if (!title || !content) {
+                alert('Title and Content are required.');
+                return;
+            }
+
+            try {
+                // Check if user has news profile
+                const { data: profile, error: profileError } = await supabase
+                    .from('news_profiles')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (profileError || !profile) {
+                    alert('Please create a news profile first before posting news!');
+                    console.error('News profile not found for user:', profileError);
+                    return;
+                }
+
+                let mediaPaths = [];
+
+                // Upload media files if provided
+                if (mediaFiles.length > 0) {
+                    for (let i = 0; i < mediaFiles.length; i++) {
+                        const file = mediaFiles[i];
+                        const fileName = `${currentUser.id}/${Date.now()}-${file.name}`;
+                        const { data: uploadData, error: uploadError } = await supabase.storage
+                            .from('news-media')
+                            .upload(fileName, file);
+
+                        if (uploadError) throw uploadError;
+                        mediaPaths.push(uploadData.path);
+                    }
+                }
+
+                // Create news post
+                const { error } = await supabase
+                    .from('news')
+                    .insert([
+                        {
+                            news_profile_id: profile.id,
+                            title: title,
+                            content: content,
+                            media_urls: mediaPaths,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                alert('News posted successfully!');
+                closeCreateNewsModal();
+                loadNews();
+                loadUserProfile(); // Refresh news count on profile
+            } catch (error) {
+                console.error('Error creating news:', error);
+                alert('Error creating news: ' + error.message);
+            }
+        }
+
+        function shareNews(newsId) {
+            // In a real app, you'd generate a unique URL for the news post
+            const shareUrl = `${window.location.origin}/news/${newsId}`; 
+            if (navigator.share) {
+                navigator.share({
+                    title: 'PG-OPPER News',
+                    text: 'Check out this news from PG-OPPER',
+                    url: shareUrl
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    alert('Link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                    alert('Could not copy link. Please copy it manually: ' + shareUrl);
+                });
+            }
+        }
+
+        // Chat Functions (Placeholder for now, as full chat requires more complex setup)
+        async function loadChatList() {
+            // This would typically load a list of conversations the user is part of.
+            // For this example, we'll keep it simple and just show the empty state.
+            const chatListContainer = document.getElementById('chatList');
+            const emptyState = document.getElementById('emptyChatState');
+            
+            chatListContainer.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            console.log('Chat functionality is a placeholder. Full implementation requires backend chat logic.');
+        }
+
+        // Support Functions
+        async function loadSupportMessages() {
+            if (!currentUser) return;
+            try {
+                const { data: messages, error } = await supabase
+                    .from('support_messages')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                const messagesContainer = document.getElementById('supportMessages');
+                messagesContainer.innerHTML = '';
+
+                if (messages && messages.length > 0) {
+                    messages.forEach(message => {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `flex ${message.is_admin_message ? 'justify-start' : 'justify-end'} mb-3`;
+                        messageElement.innerHTML = `
+                            <div class="chat-bubble ${message.is_admin_message ? 'received' : 'sent'} p-3 max-w-xs">
+                                <p class="text-sm">${message.content}</p>
+                                <span class="text-xs opacity-70">${new Date(message.created_at).toLocaleTimeString()}</span>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(messageElement);
+                    });
+                    
+                    // Scroll to bottom
+                    document.getElementById('supportChatContainer').scrollTop = document.getElementById('supportChatContainer').scrollHeight;
+                } else {
+                    messagesContainer.innerHTML = '<p class="text-white opacity-70 text-center">No support messages yet. Send a message to start a conversation.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading support messages:', error);
+            }
+        }
+
+        async function sendSupportMessage() {
+            if (!currentUser) {
+                alert('Please login to send a support message.');
+                showAuthScreen();
+                return;
+            }
+
+            const input = document.getElementById('supportMessageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            try {
+                const { error } = await supabase
+                    .from('support_messages')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            content: message,
+                            is_admin_message: false, // Message from user
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                input.value = '';
+                loadSupportMessages();
+            } catch (error) {
+                console.error('Error sending support message:', error);
+                alert('Error sending message. Please try again.');
+            }
+        }
+
+        // About Functions
+        async function loadAboutContent() {
+            try {
+                const { data: aboutData, error } = await supabase
+                    .from('about_content')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const aboutContentContainer = document.getElementById('aboutContent');
+                const defaultAbout = document.getElementById('defaultAbout');
+
+                if (aboutData && aboutData.length > 0) {
+                    defaultAbout.classList.add('hidden');
+                    aboutContentContainer.innerHTML = '';
+                    
+                    aboutData.forEach(item => {
+                        const aboutElement = document.createElement('div');
+                        aboutElement.className = 'glass-effect rounded-xl p-6 mb-4';
+                        aboutElement.innerHTML = `
+                            <h3 class="text-white text-xl font-bold mb-4">${item.name}</h3>
+                            ${item.link ? `
+                                <a href="${item.link}" target="_blank" class="flex items-center space-x-2 bg-white bg-opacity-20 rounded-lg p-3 hover:bg-opacity-30 transition-colors">
+                                    ${item.icon_url ? `<img src="${getStoragePublicUrl('about-icons', item.icon_url)}" class="w-6 h-6" alt="Icon">` : `<i class="fas fa-link text-white"></i>`}
+                                    <span class="text-white">${item.link}</span>
+                                </a>
+                            ` : ''}
+                        `;
+                        aboutContentContainer.appendChild(aboutElement);
+                    });
+                } else {
+                    defaultAbout.classList.remove('hidden');
+                    aboutContentContainer.innerHTML = ''; // Ensure no old content if default is shown
+                }
+            } catch (error) {
+                console.error('Error loading about content:', error);
+            }
+        }
+
+        // Utility Functions
+        function getStoragePublicUrl(bucketName, path) {
+            // Supabase public URL format: https://[PROJECT_REF].supabase.co/storage/v1/object/public/[BUCKET_NAME]/[PATH_TO_FILE]
+            return `${SUPABASE_URL}/storage/v1/object/public/${bucketName}/${path}`;
+        }
+
+        // Real-time subscriptions
+        function setupRealtimeSubscriptions() {
+            // Unsubscribe from previous channels if any
+            supabase.removeAllChannels();
+
+            // Subscribe to new files
+            supabase
+                .channel('files_changes')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'files' }, payload => {
+                    console.log('Realtime: New file added!', payload);
+                    loadFiles();
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'files' }, payload => {
+                    console.log('Realtime: File updated!', payload);
+                    loadFiles();
+                })
+                .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'files' }, payload => {
+                    console.log('Realtime: File deleted!', payload);
+                    loadFiles();
+                })
+                .subscribe();
+
+            // Subscribe to news changes
+            supabase
+                .channel('news_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'news' }, payload => {
+                    console.log('Realtime: News changed!', payload);
+                    loadNews();
+                })
+                .subscribe();
+
+            // Subscribe to support messages for the current user
+            if (currentUser) {
+                supabase
+                    .channel(`support_messages_${currentUser.id}`)
+                    .on('postgres_changes', { 
+                        event: 'INSERT', 
+                        schema: 'public', 
+                        table: 'support_messages',
+                        filter: `user_id=eq.${currentUser.id}`
+                    }, payload => {
+                        console.log('Realtime: New support message!', payload);
+                        if (currentPage === 'support') {
+                            loadSupportMessages();
+                        }
+                    })
+                    .subscribe();
+            }
+
+            // Subscribe to about content changes
+            supabase
+                .channel('about_content_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'about_content' }, payload => {
+                    console.log('Realtime: About content changed!', payload);
+                    loadAboutContent();
+                })
+                .subscribe();
+
+            // Subscribe to purchases changes (for user's own history)
+            if (currentUser) {
+                supabase
+                    .channel(`purchases_changes_${currentUser.id}`)
+                    .on('postgres_changes', { 
+                        event: '*', 
+                        schema: 'public', 
+                        table: 'purchases',
+                        filter: `user_id=eq.${currentUser.id}`
+                    }, payload => {
+                        console.log('Realtime: Purchase changed!', payload);
+                        if (currentPage === 'mi') {
+                            loadPurchaseHistory();
+                        }
+                    })
+                    .subscribe();
+            }
+        }
+    </script>
+</body>
+</html>
