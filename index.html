@@ -603,13 +603,19 @@
         </div>
     </div>
 
-    <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'https://rmeudvhvqlddqqkiziyo.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZXVkdmh2cWxkZHFxa2l6aXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTMxOTIsImV4cCI6MjA2OTU2OTE5Mn0.xFgMv-K5o5yyTpe4U2YJK5jC9GPJp98G4cgD9p5W4ak';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  
+  <script>
+    // Configuration - ဒီနေရာမှာ သင့် Supabase credentials တွေကို ထည့်ပါ
+    const CONFIG = {
+      SUPABASE_URL: 'https://rmeudvhvqlddqqkiziyo.supabase.co', // သင့် URL ကို ထည့်ပါ
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZXVkdmh2cWxkZHFxa2l6aXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTMxOTIsImV4cCI6MjA2OTU2OTE5Mn0.xFgMv-K5o5yyTpe4U2YJK5jC9GPJp98G4cgD9p5W4ak', // သင့် Key ကို ထည့်ပါ
+      MAX_RETRY_ATTEMPTS: 3,
+      RETRY_DELAY: 2000,
+      CONNECTION_TIMEOUT: 10000
+    };
         // Global State
         let currentUser = null; // Stores the user object from our custom 'users' table
         let currentPage = 'home';
