@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PG-OPPER - Digital Marketplace</title>
+    <title>PG-OPPER - Digital Marketplace | ဒစ်ဂျစ်တယ် စျေးကွက်</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
         * {
             font-family: 'Poppins', sans-serif;
         }
@@ -27,162 +26,224 @@
         }
 
         .myanmar-map {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #FFEAA7);
             position: relative;
-            animation: spin 2s linear infinite;
+            animation: mapSpin 3s ease-in-out infinite;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
         .myanmar-map::before {
             content: '🇲🇲';
-            font-size: 40px;
+            font-size: 60px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            animation: flagWave 2s ease-in-out infinite alternate;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes mapSpin {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+        }
+
+        @keyframes flagWave {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.2); }
         }
 
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
         }
 
         .card-hover {
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         .floating-animation {
-            animation: float 3s ease-in-out infinite;
+            animation: float 4s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-15px); }
         }
 
         .pulse-animation {
-            animation: pulse 2s infinite;
+            animation: pulse 2.5s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
         }
 
         .tab-active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            transform: scale(1.1);
         }
 
         .chat-bubble {
-            max-width: 70%;
+            max-width: 75%;
             word-wrap: break-word;
+            animation: bubbleIn 0.3s ease-out;
+        }
+
+        @keyframes bubbleIn {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .chat-bubble.sent {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             margin-left: auto;
-            border-radius: 18px 18px 5px 18px;
+            border-radius: 20px 20px 5px 20px;
         }
 
         .chat-bubble.received {
-            background: #f1f1f1;
+            background: rgba(255,255,255,0.9);
             color: #333;
             margin-right: auto;
-            border-radius: 18px 18px 18px 5px;
-        }
-
-        .loading-dots {
-            display: inline-block;
+            border-radius: 20px 20px 20px 5px;
         }
 
         .loading-dots::after {
             content: '...';
-            animation: dots 1.5s steps(4, end) infinite;
+            animation: dots 1.8s steps(4, end) infinite;
         }
 
         @keyframes dots {
-            0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            40% { color: black; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            60% { text-shadow: .25em 0 0 black, .5em 0 0 rgba(0,0,0,0); }
-            80%, 100% { text-shadow: .25em 0 0 black, .5em 0 0 black; }
+            0%, 20% { color: rgba(255,255,255,0); text-shadow: .25em 0 0 rgba(255,255,255,0), .5em 0 0 rgba(255,255,255,0); }
+            40% { color: white; text-shadow: .25em 0 0 rgba(255,255,255,0), .5em 0 0 rgba(255,255,255,0); }
+            60% { text-shadow: .25em 0 0 white, .5em 0 0 rgba(255,255,255,0); }
+            80%, 100% { text-shadow: .25em 0 0 white, .5em 0 0 white; }
         }
 
         .news-card {
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
 
         .bottom-nav {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
             border-top: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
         }
 
         .nav-item {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
         .nav-item.active {
             color: #667eea;
-            transform: scale(1.1);
+            transform: scale(1.15) translateY(-2px);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #667eea;
+            border-radius: 50%;
         }
 
         .file-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
         }
 
         .file-card {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1);
         }
 
         .file-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
         }
 
         .payment-option {
-            border: 2px solid #e5e5e5;
-            border-radius: 10px;
-            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            padding: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            background: rgba(255,255,255,0.1);
         }
 
         .payment-option:hover, .payment-option.selected {
             border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.02);
         }
 
         .hidden {
@@ -190,134 +251,353 @@
         }
 
         .fade-in {
-            animation: fadeIn 0.5s ease-in;
+            animation: fadeIn 0.6s ease-in;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .slide-up {
-            animation: slideUp 0.3s ease-out;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+            0% { transform: translateY(100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-overlay {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            margin-right: auto;
+            max-width: 80px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.6s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.3s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-12px); opacity: 1; }
+        }
+
+        .notification {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .success-pulse {
+            animation: successPulse 0.8s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); background-color: currentColor; }
+            50% { transform: scale(1.1); background-color: #10b981; }
+            100% { transform: scale(1); background-color: currentColor; }
+        }
+
+        .error-shake {
+            animation: shake 0.6s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .icon-bounce {
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .scrollbar-hidden::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hidden {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .progress-ring {
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .myanmar-pattern {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 25%, rgba(69, 183, 209, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 25% 75%, rgba(255, 234, 167, 0.1) 0%, transparent 50%);
+        }
+
+        @media (max-width: 640px) {
+            .file-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+            
+            .chat-bubble {
+                max-width: 85%;
+            }
+            
+            .myanmar-map {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .myanmar-map::before {
+                font-size: 50px;
+            }
+        }
+
+        .country-flag {
+            font-size: 1.5em;
+            margin-right: 8px;
+        }
+
+        .phone-input-container {
+            position: relative;
+        }
+
+        .phone-input-container::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 20px;
+            background: #e5e7eb;
+        }
+
+        .auth-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border-radius: 50%;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-progress {
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #FFEAA7);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .myanmar-border {
+            border-image: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #FFEAA7) 1;
         }
     </style>
 </head>
-<body class="myanmar-gradient min-h-screen">
+<body class="myanmar-gradient min-h-screen myanmar-pattern">
     <!-- Loading Screen -->
     <div id="loadingScreen" class="fixed inset-0 z-50 flex items-center justify-center myanmar-gradient">
         <div class="text-center">
-            <div class="myanmar-map mb-4"></div>
-            <h2 class="text-white text-2xl font-bold mb-2">PG-OPPER</h2>
-            <p class="text-white opacity-80">Loading<span class="loading-dots"></span></p>
+            <div class="myanmar-map mb-6 mx-auto"></div>
+            <h2 class="text-white text-3xl font-bold mb-3 gradient-text">PG-OPPER</h2>
+            <p class="text-white opacity-90 text-lg mb-6">Digital Marketplace | ဒစ်ဂျစ်တယ် စျေးကွက်</p>
+            <div class="w-64 h-2 bg-white bg-opacity-20 rounded-full mx-auto overflow-hidden">
+                <div id="loadingProgress" class="loading-progress"></div>
+            </div>
+            <p class="text-white opacity-80 mt-4 loading-dots">Loading</p>
         </div>
     </div>
 
     <!-- Authentication Screen -->
     <div id="authScreen" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
-        <div class="glass-effect rounded-2xl p-8 w-full max-w-md">
+        <div class="auth-form rounded-3xl p-8 w-full max-w-md slide-up">
             <!-- Login Form -->
             <div id="loginForm" class="fade-in">
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-white mb-2">PG-OPPER</h1>
-                    <p class="text-white opacity-80">Welcome Back | ပြန်လည်ကြိုဆိုပါသည်</p>
+                    <div class="feature-icon mx-auto mb-4">
+                        <i class="fas fa-gem text-2xl text-white"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mb-3">PG-OPPER</h1>
+                    <p class="text-white opacity-90">Welcome Back | ပြန်လည်ကြိုဆိုပါသည်</p>
+                    <div class="w-16 h-1 bg-gradient-to-r from-transparent via-white to-transparent mx-auto mt-4 opacity-50"></div>
                 </div>
                 
                 <form id="loginFormElement" class="space-y-6">
                     <div>
-                        <label class="block text-white text-sm font-medium mb-2">Country | နိုင်ငံ</label>
-                        <select id="loginCountry" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="+95">🇲🇲 Myanmar (+95)</option>
-                            <option value="+86">🇨🇳 China (+86)</option>
-                            <option value="+65">🇸🇬 Singapore (+65)</option>
-                            <option value="+66">🇹🇭 Thailand (+66)</option>
+                        <label class="block text-white text-sm font-medium mb-3">
+                            <i class="fas fa-globe mr-2"></i>Country | နိုင်ငံ
+                        </label>
+                        <select id="loginCountry" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="+95" class="text-black">🇲🇲 Myanmar (+95)</option>
+                            <option value="+86" class="text-black">🇨🇳 China (+86)</option>
+                            <option value="+65" class="text-black">🇸🇬 Singapore (+65)</option>
+                            <option value="+66" class="text-black">🇹🇭 Thailand (+66)</option>
                         </select>
                     </div>
                     
-                    <div>
-                        <label class="block text-white text-sm font-medium mb-2">Phone Number | ဖုန်းနံပါတ်</label>
-                        <input type="tel" id="loginPhone" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter phone number">
+                    <div class="phone-input-container">
+                        <label class="block text-white text-sm font-medium mb-3">
+                            <i class="fas fa-phone mr-2"></i>Phone Number | ဖုန်းနံပါတ်
+                        </label>
+                        <input type="tel" id="loginPhone" class="w-full p-4 pl-16 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter phone number">
                     </div>
                     
                     <div>
-                        <label class="block text-white text-sm font-medium mb-2">Password | စကားဝှက်</label>
-                        <input type="password" id="loginPassword" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter password">
+                        <label class="block text-white text-sm font-medium mb-3">
+                            <i class="fas fa-lock mr-2"></i>Password | စကားဝှက်
+                        </label>
+                        <input type="password" id="loginPassword" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter password">
                     </div>
                     
-                    <button type="submit" class="w-full btn-primary text-white font-semibold py-3 rounded-lg">
-                        Login | အကောင့်ဝင်ရန်
+                    <button type="submit" class="w-full btn-primary text-white font-semibold py-4 rounded-xl text-lg">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login | အကောင့်ဝင်ရန်
                     </button>
                 </form>
                 
-                <p class="text-center text-white mt-6">
-                    Don't have an account? | အကောင့်မရှိဘူးလား?
-                    <button id="showSignup" class="text-yellow-300 font-semibold ml-1">Sign Up | အကောင့်ဖွင့်ရန်</button>
-                </p>
+                <div class="text-center mt-8">
+                    <p class="text-white opacity-80 mb-3">Don't have an account? | အကောင့်မရှိဘူးလား?</p>
+                    <button id="showSignup" class="text-yellow-300 font-semibold text-lg hover:text-yellow-200 transition-colors">
+                        <i class="fas fa-user-plus mr-2"></i>Sign Up | အကောင့်ဖွင့်ရန်
+                    </button>
+                </div>
             </div>
 
             <!-- Signup Form -->
             <div id="signupForm" class="hidden">
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
-                    <p class="text-white opacity-80">Join PG-OPPER | PG-OPPER သို့ ဝင်ရောက်ပါ</p>
+                    <div class="feature-icon mx-auto mb-4">
+                        <i class="fas fa-user-plus text-2xl text-white"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mb-3">Create Account</h1>
+                    <p class="text-white opacity-90">Join PG-OPPER | PG-OPPER သို့ ဝင်ရောက်ပါ</p>
+                    <div class="w-16 h-1 bg-gradient-to-r from-transparent via-white to-transparent mx-auto mt-4 opacity-50"></div>
                 </div>
                 
                 <form id="signupFormElement" class="space-y-6">
                     <div>
-                        <label class="block text-white text-sm font-medium mb-2">Name | အမည်</label>
-                        <input type="text" id="signupName" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your name">
+                        <label class="block text-white text-sm font-medium mb-3">
+                            <i class="fas fa-user mr-2"></i>Name | အမည်
+                        </label>
+                        <input type="text" id="signupName" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter your name" required>
                     </div>
                     
                     <div>
-                        <label class="block text-white text-sm font-medium mb-2">Country | နိုင်ငံ</label>
-                        <select id="signupCountry" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="+95">🇲🇲 Myanmar (+95)</option>
-                            <option value="+86">🇨🇳 China (+86)</option>
-                            <option value="+65">🇸🇬 Singapore (+65)</option>
-                            <option value="+66">🇹🇭 Thailand (+66)</option>
+                        <label class="block text-white text-sm font-medium mb-3">
+                            <i class="fas fa-globe mr-2"></i>Country | နိုင်ငံ
+                        </label>
+                        <select id="signupCountry" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="+95" class="text-black">🇲🇲 Myanmar (+95)</option>
+                            <option value="+86" class="text-black">🇨🇳 China (+86)</option>
+                            <option value="+65" class="text-black">🇸🇬 Singapore (+65)</option>
+                            <option value="+66" class="text-black">🇹🇭 Thailand (+66)</option>
                         </select>
                     </div>
                     
-                    <div>
-                        <label class="block text-white text-sm font-medium mb-2">Phone Number | ဖုန်းနံပါတ်</label>
-                        <input type="tel" id="signupPhone" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter phone number">
+                    <div class="phone-input-container">
+                        <label class="block text-white text-sm font-medium mb-3">
+                            <i class="fas fa-phone mr-2"></i>Phone Number | ဖုန်းနံပါတ်
+                        </label>
+                        <input type="tel" id="signupPhone" class="w-full p-4 pl-16 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter phone number" required>
                     </div>
                     
                     <div>
-                        <label class="block text-white text-sm font-medium mb-2">Password | စကားဝှက်</label>
-                        <input type="password" id="signupPassword" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Create password">
+                        <label class="block text-white text-sm font-medium mb-3">
+                            <i class="fas fa-lock mr-2"></i>Password | စကားဝှက်
+                        </label>
+                        <input type="password" id="signupPassword" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Create password" required>
                     </div>
                     
-                    <button type="submit" class="w-full btn-primary text-white font-semibold py-3 rounded-lg">
-                        Create Account | အကောင့်ဖန်တီးရန်
+                    <button type="submit" class="w-full btn-primary text-white font-semibold py-4 rounded-xl text-lg">
+                        <i class="fas fa-rocket mr-2"></i>Create Account | အကောင့်ဖန်တီးရန်
                     </button>
                 </form>
                 
-                <p class="text-center text-white mt-6">
-                    Already have an account? | အကောင့်ရှိပြီးလား?
-                    <button id="showLogin" class="text-yellow-300 font-semibold ml-1">Login | အကောင့်ဝင်ရန်</button>
-                </p>
+                <div class="text-center mt-8">
+                    <p class="text-white opacity-80 mb-3">Already have an account? | အကောင့်ရှိပြီးလား?</p>
+                    <button id="showLogin" class="text-yellow-300 font-semibold text-lg hover:text-yellow-200 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login | အကောင့်ဝင်ရန်
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Main App -->
-    <div id="mainApp" class="hidden min-h-screen pb-20">
+    <div id="mainApp" class="hidden min-h-screen pb-24">
         <!-- Header -->
-        <header class="glass-effect text-white p-4 sticky top-0 z-30">
+        <header class="glass-effect text-white p-6 sticky top-0 z-30">
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold">PG-OPPER</h1>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-400 to-red-500 flex items-center justify-center">
+                        <i class="fas fa-gem text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">PG-OPPER</h1>
+                        <p class="text-xs opacity-75">Digital Marketplace</p>
+                    </div>
+                </div>
                 <div class="flex items-center space-x-4">
-                    <button id="searchBtn" class="p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors">
-                        <i class="fas fa-search text-lg"></i>
+                    <button id="searchBtn" class="p-3 rounded-full hover:bg-white hover:bg-opacity-20 transition-all duration-300 glow-effect">
+                        <i class="fas fa-search text-lg icon-bounce"></i>
                     </button>
-                    <button id="profileBtn" class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
-                        <i class="fas fa-user text-sm"></i>
+                    <button id="notificationBtn" class="relative p-3 rounded-full hover:bg-white hover:bg-opacity-20 transition-all duration-300">
+                        <i class="fas fa-bell text-lg"></i>
+                        <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center pulse-animation">0</span>
+                    </button>
+                    <button id="profileBtn" class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center floating-animation">
+                        <i class="fas fa-user text-lg"></i>
                     </button>
                 </div>
             </div>
@@ -327,51 +607,85 @@
         <div class="container mx-auto px-4 py-6">
             <!-- Home Page -->
             <div id="homePage" class="page fade-in">
-                <div class="mb-6">
-                    <h2 class="text-white text-2xl font-bold mb-2">Digital Store | ဒစ်ဂျစ်တယ် ဆိုင်</h2>
+                <div class="mb-8">
+                    <h2 class="text-white text-3xl font-bold mb-3">Digital Store</h2>
+                    <h3 class="text-white text-xl opacity-90 mb-2">ဒစ်ဂျစ်တယ် ဆိုင်</h3>
                     <p class="text-white opacity-80">Download files and apps | ဖိုင်များနှင့် အက်ပ်များ ဒေါင်းလုဒ်လုပ်ပါ</p>
+                    <div class="w-20 h-1 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full mt-4"></div>
                 </div>
 
-                <div id="fileGrid" class="file-grid">
+                <!-- Search Bar -->
+                <div class="glass-effect rounded-2xl p-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-search text-white opacity-70"></i>
+                        <input type="text" id="fileSearchInput" placeholder="Search files and apps... | ဖိုင်များနှင့် အက်ပ်များ ရှာဖွေပါ..." class="flex-1 bg-transparent text-white placeholder-white placeholder-opacity-70 focus:outline-none">
+                        <button id="filterBtn" class="text-white opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="fileGrid" class="file-grid mb-8">
                     <!-- Files will be loaded here -->
                 </div>
 
                 <!-- Empty State -->
-                <div id="emptyState" class="text-center py-12">
-                    <i class="fas fa-download text-6xl text-white opacity-50 mb-4"></i>
-                    <h3 class="text-white text-xl font-semibold mb-2">No Files Available</h3>
-                    <p class="text-white opacity-70">Files will appear here when uploaded by admin</p>
+                <div id="emptyState" class="text-center py-16">
+                    <div class="feature-icon mx-auto mb-6">
+                        <i class="fas fa-download text-4xl text-white opacity-70"></i>
+                    </div>
+                    <h3 class="text-white text-2xl font-semibold mb-3">No Files Available</h3>
+                    <p class="text-white opacity-70 mb-2">ဖိုင်များ မရှိသေးပါ</p>
+                    <p class="text-white opacity-60">Files will appear here when uploaded by admin</p>
                 </div>
             </div>
 
             <!-- Chat Page -->
             <div id="chatPage" class="page hidden">
-                <div class="mb-6">
-                    <h2 class="text-white text-2xl font-bold mb-2">Messages | စာများ</h2>
+                <div class="mb-8">
+                    <h2 class="text-white text-3xl font-bold mb-3">Messages</h2>
+                    <h3 class="text-white text-xl opacity-90 mb-2">စာများ</h3>
                     <p class="text-white opacity-80">Chat with other users | အခြားအသုံးပြုသူများနှင့် စကားပြောရန်</p>
+                    <div class="w-20 h-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mt-4"></div>
+                </div>
+
+                <!-- Search Users -->
+                <div class="glass-effect rounded-2xl p-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user-search text-white opacity-70"></i>
+                        <input type="text" id="userSearchInput" placeholder="Search users by username... | အသုံးပြုသူများကို ရှာဖွေပါ..." class="flex-1 bg-transparent text-white placeholder-white placeholder-opacity-70 focus:outline-none">
+                        <button id="searchUsersBtn" class="btn-primary px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Chat List -->
-                <div id="chatList" class="space-y-3">
+                <div id="chatList" class="space-y-4">
                     <!-- Chat items will be loaded here -->
                 </div>
 
                 <!-- Empty Chat State -->
-                <div id="emptyChatState" class="text-center py-12">
-                    <i class="fas fa-comments text-6xl text-white opacity-50 mb-4"></i>
-                    <h3 class="text-white text-xl font-semibold mb-2">No Conversations</h3>
-                    <p class="text-white opacity-70">Start chatting with other users</p>
+                <div id="emptyChatState" class="text-center py-16">
+                    <div class="feature-icon mx-auto mb-6">
+                        <i class="fas fa-comments text-4xl text-white opacity-70"></i>
+                    </div>
+                    <h3 class="text-white text-2xl font-semibold mb-3">No Conversations</h3>
+                    <p class="text-white opacity-70 mb-2">စကားပြောဆိုမှု မရှိသေးပါ</p>
+                    <p class="text-white opacity-60">Start chatting with other users</p>
                 </div>
             </div>
 
             <!-- News Page -->
             <div id="newsPage" class="page hidden">
-                <div class="mb-6 flex items-center justify-between">
+                <div class="mb-8 flex items-center justify-between">
                     <div>
-                        <h2 class="text-white text-2xl font-bold mb-2">News Feed | သတင်းများ</h2>
+                        <h2 class="text-white text-3xl font-bold mb-3">News Feed</h2>
+                        <h3 class="text-white text-xl opacity-90 mb-2">သတင်းများ</h3>
                         <p class="text-white opacity-80">Latest updates and posts | နောက်ဆုံးပေါ် သတင်းများ</p>
+                        <div class="w-20 h-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full mt-4"></div>
                     </div>
-                    <button id="createNewsBtn" class="btn-primary text-white px-4 py-2 rounded-lg">
+                    <button id="createNewsBtn" class="btn-primary text-white px-6 py-3 rounded-xl">
                         <i class="fas fa-plus mr-2"></i>Post
                     </button>
                 </div>
@@ -381,43 +695,64 @@
                 </div>
 
                 <!-- Empty News State -->
-                <div id="emptyNewsState" class="text-center py-12">
-                    <i class="fas fa-newspaper text-6xl text-white opacity-50 mb-4"></i>
-                    <h3 class="text-white text-xl font-semibold mb-2">No News Yet</h3>
-                    <p class="text-white opacity-70">Be the first to share something!</p>
+                <div id="emptyNewsState" class="text-center py-16">
+                    <div class="feature-icon mx-auto mb-6">
+                        <i class="fas fa-newspaper text-4xl text-white opacity-70"></i>
+                    </div>
+                    <h3 class="text-white text-2xl font-semibold mb-3">No News Yet</h3>
+                    <p class="text-white opacity-70 mb-2">သတင်း မရှိသေးပါ</p>
+                    <p class="text-white opacity-60">Be the first to share something!</p>
                 </div>
             </div>
 
             <!-- Support Page -->
             <div id="supportPage" class="page hidden">
-                <div class="mb-6">
-                    <h2 class="text-white text-2xl font-bold mb-2">Support | အကူအညီ</h2>
+                <div class="mb-8">
+                    <h2 class="text-white text-3xl font-bold mb-3">Support</h2>
+                    <h3 class="text-white text-xl opacity-90 mb-2">အကူအညီ</h3>
                     <p class="text-white opacity-80">Get help from admin | အက်ဒမင်ထံမှ အကူအညီယူပါ</p>
+                    <div class="w-20 h-1 bg-gradient-to-r from-orange-400 to-red-500 rounded-full mt-4"></div>
                 </div>
 
-                <!-- Support Chat -->
-                <div class="glass-effect rounded-xl p-4 mb-4" style="height: 400px; overflow-y: auto;" id="supportChatContainer">
-                    <div id="supportMessages" class="space-y-3">
-                        <!-- Support messages will appear here -->
+                <!-- Support Chat Container -->
+                <div class="glass-effect rounded-2xl p-4 mb-6" style="height: 400px;">
+                    <div id="supportMessages" class="h-full overflow-y-auto scrollbar-hidden space-y-4 p-2">
+                        <!-- Welcome Message -->
+                        <div class="chat-bubble received p-4">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                                    <i class="fas fa-headset text-white text-sm"></i>
+                                </div>
+                                <span class="font-semibold text-gray-700">Admin Support</span>
+                            </div>
+                            <p class="text-gray-700 mb-1">Hello! How can I help you today?</p>
+                            <p class="text-gray-700">မင်္ဂလာပါ! ဘယ်လို အကူအညီပေးရမလဲ?</p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Support Message Input -->
-                <div class="glass-effect rounded-xl p-4">
+                <div class="glass-effect rounded-2xl p-4">
                     <div class="flex space-x-3">
-                        <input type="text" id="supportMessageInput" class="flex-1 p-3 rounded-lg border-0 bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70" placeholder="Type your message...">
-                        <button id="sendSupportMessage" class="btn-primary px-4 py-3 rounded-lg">
-                            <i class="fas fa-paper-plane"></i>
+                        <button id="attachFileBtn" class="text-white opacity-70 hover:opacity-100 transition-opacity p-3">
+                            <i class="fas fa-paperclip text-lg"></i>
+                        </button>
+                        <input type="text" id="supportMessageInput" class="flex-1 p-3 rounded-xl bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-blue-500 border-2 border-white border-opacity-20" placeholder="Type your message... | စာတို့ပါ...">
+                        <button id="sendSupportMessage" class="btn-primary px-6 py-3 rounded-xl">
+                            <i class="fas fa-paper-plane text-lg"></i>
                         </button>
                     </div>
+                    <input type="file" id="supportFileInput" class="hidden" accept="image/*,audio/*,video/*,.pdf,.doc,.docx">
                 </div>
             </div>
 
             <!-- About Page -->
             <div id="aboutPage" class="page hidden">
-                <div class="mb-6">
-                    <h2 class="text-white text-2xl font-bold mb-2">About Us | ကျွန်ုပ်တို့အကြောင်း</h2>
+                <div class="mb-8">
+                    <h2 class="text-white text-3xl font-bold mb-3">About Us</h2>
+                    <h3 class="text-white text-xl opacity-90 mb-2">ကျွန်ုပ်တို့အကြောင်း</h3>
                     <p class="text-white opacity-80">Learn more about PG-OPPER</p>
+                    <div class="w-20 h-1 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full mt-4"></div>
                 </div>
 
                 <div id="aboutContent" class="space-y-6">
@@ -425,65 +760,131 @@
                 </div>
 
                 <!-- Default About Content -->
-                <div id="defaultAbout" class="glass-effect rounded-xl p-6">
-                    <h3 class="text-white text-xl font-bold mb-4">PG-OPPER Digital Marketplace</h3>
-                    <p class="text-white opacity-90 mb-4">
-                        PG-OPPER is your premier digital marketplace for files, applications, and digital content. 
-                        We provide a secure platform for users to discover, purchase, and download digital products.
-                    </p>
-                    <p class="text-white opacity-90">
-                        ကျွန်ုပ်တို့သည် ဒစ်ဂျစ်တယ်ဖိုင်များ၊ အက်ပ်လီကေးရှင်းများနှင့် ဒစ်ဂျစ်တယ်အကြောင်းအရာများအတွက် 
-                        ထိပ်တန်းစျေးကွက်ဖြစ်ပါသည်။
-                    </p>
+                <div id="defaultAbout" class="glass-effect rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="feature-icon mx-auto mb-4">
+                            <i class="fas fa-gem text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-white text-2xl font-bold mb-4">PG-OPPER Digital Marketplace</h3>
+                    </div>
+                    
+                    <div class="space-y-6 text-white">
+                        <p class="opacity-90 leading-relaxed">
+                            PG-OPPER is your premier digital marketplace for files, applications, and digital content. 
+                            We provide a secure platform for users to discover, purchase, and download digital products.
+                        </p>
+                        
+                        <p class="opacity-90 leading-relaxed">
+                            ကျွန်ုပ်တို့သည် ဒစ်ဂျစ်တယ်ဖိုင်များ၊ အက်ပ်လီကေးရှင်းများနှင့် ဒစ်ဂျစ်တယ်အကြောင်းအရာများအတွက် 
+                            ထိပ်တန်းစျေးကွက်ဖြစ်ပါသည်။ လုံခြုံပြီး အရည်အသွေးမြင့် ဝန်ဆောင်မှုကို ပေးဆောင်ပါသည်။
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                            <div class="bg-white bg-opacity-10 rounded-xl p-6">
+                                <i class="fas fa-shield-alt text-2xl text-green-400 mb-3"></i>
+                                <h4 class="font-semibold mb-2">Secure Platform</h4>
+                                <p class="opacity-80 text-sm">လုံခြုံသော ပလပ်ဖောင်း</p>
+                            </div>
+                            <div class="bg-white bg-opacity-10 rounded-xl p-6">
+                                <i class="fas fa-clock text-2xl text-blue-400 mb-3"></i>
+                                <h4 class="font-semibold mb-2">24/7 Support</h4>
+                                <p class="opacity-80 text-sm">၂၄ နာရီ အကူအညီ</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Mi (Profile) Page -->
             <div id="miPage" class="page hidden">
-                <div class="mb-6">
-                    <h2 class="text-white text-2xl font-bold mb-2">My Profile | ကျွန်ုပ်၏ပရိုဖိုင်</h2>
+                <div class="mb-8">
+                    <h2 class="text-white text-3xl font-bold mb-3">My Profile</h2>
+                    <h3 class="text-white text-xl opacity-90 mb-2">ကျွန်ုပ်၏ပရိုဖိုင်</h3>
                     <p class="text-white opacity-80">Manage your account | သင့်အကောင့်ကို စီမံပါ</p>
+                    <div class="w-20 h-1 bg-gradient-to-r from-pink-400 to-red-500 rounded-full mt-4"></div>
                 </div>
 
                 <!-- Profile Card -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
-                            <i class="fas fa-user text-2xl text-white"></i>
+                <div class="glass-effect rounded-2xl p-8 mb-6">
+                    <div class="flex items-center space-x-6 mb-6">
+                        <div class="w-20 h-20 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center floating-animation">
+                            <i class="fas fa-user text-3xl text-white"></i>
                         </div>
                         <div>
-                            <h3 class="text-white text-xl font-bold" id="profileName">User</h3>
-                            <p class="text-white opacity-70" id="profilePhone">+95xxxxxxxxx</p>
+                            <h3 class="text-white text-2xl font-bold" id="profileName">User</h3>
+                            <p class="text-white opacity-70 text-lg" id="profilePhone">+95xxxxxxxxx</p>
+                            <p class="text-white opacity-60 text-sm" id="profileCountry">Myanmar</p>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 text-center">
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="text-white text-2xl font-bold" id="purchaseCount">0</h4>
-                            <p class="text-white opacity-70">Purchases</p>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="bg-white bg-opacity-20 rounded-xl p-6">
+                            <h4 class="text-white text-3xl font-bold pulse-animation" id="purchaseCount">0</h4>
+                            <p class="text-white opacity-70 mt-2">Purchases</p>
+                            <p class="text-white opacity-60 text-sm">ဝယ်ယူမှုများ</p>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="text-white text-2xl font-bold" id="newsCount">0</h4>
-                            <p class="text-white opacity-70">News Posts</p>
+                        <div class="bg-white bg-opacity-20 rounded-xl p-6">
+                            <h4 class="text-white text-3xl font-bold pulse-animation" id="newsCount">0</h4>
+                            <p class="text-white opacity-70 mt-2">News Posts</p>
+                            <p class="text-white opacity-60 text-sm">သတင်းများ</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-xl p-6">
+                            <h4 class="text-white text-3xl font-bold pulse-animation" id="chatCount">0</h4>
+                            <p class="text-white opacity-70 mt-2">Chats</p>
+                            <p class="text-white opacity-60 text-sm">စကားပြောမှုများ</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Purchase History -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
-                    <h3 class="text-white text-lg font-bold mb-4">Purchase History | ဝယ်ယူမှုမှတ်တမ်း</h3>
-                    <div id="purchaseHistory" class="space-y-3">
+                <div class="glass-effect rounded-2xl p-6 mb-6">
+                    <h3 class="text-white text-xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-history mr-3"></i>Purchase History | ဝယ်ယူမှုမှတ်တမ်း
+                    </h3>
+                    <div id="purchaseHistory" class="space-y-4">
                         <!-- Purchase history will be loaded here -->
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="space-y-3">
-                    <button id="createNewsProfileBtn" class="w-full glass-effect text-white p-4 rounded-xl text-left">
-                        <i class="fas fa-newspaper mr-3"></i>Create News Profile | သတင်းပရိုဖိုင်ဖန်တီးရန်
+                <div class="space-y-4">
+                    <button id="createNewsProfileBtn" class="w-full glass-effect text-white p-6 rounded-2xl text-left hover:bg-white hover:bg-opacity-10 transition-all card-hover">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-newspaper text-2xl mr-4"></i>
+                                <div>
+                                    <h4 class="font-semibold text-lg">Create News Profile</h4>
+                                    <p class="opacity-70 text-sm">သတင်းပရိုဖိုင်ဖန်တီးရန်</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-xl opacity-50"></i>
+                        </div>
                     </button>
-                    <button id="logoutBtn" class="w-full bg-red-500 bg-opacity-80 text-white p-4 rounded-xl text-left">
-                        <i class="fas fa-sign-out-alt mr-3"></i>Logout | ထွက်ရန်
+                    
+                    <button id="settingsBtn" class="w-full glass-effect text-white p-6 rounded-2xl text-left hover:bg-white hover:bg-opacity-10 transition-all card-hover">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-cog text-2xl mr-4"></i>
+                                <div>
+                                    <h4 class="font-semibold text-lg">Settings</h4>
+                                    <p class="opacity-70 text-sm">ဆက်တင်များ</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-xl opacity-50"></i>
+                        </div>
+                    </button>
+                    
+                    <button id="logoutBtn" class="w-full bg-red-500 bg-opacity-80 hover:bg-opacity-100 text-white p-6 rounded-2xl text-left transition-all card-hover">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-sign-out-alt text-2xl mr-4"></i>
+                                <div>
+                                    <h4 class="font-semibold text-lg">Logout</h4>
+                                    <p class="opacity-70 text-sm">ထွက်ရန်</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-xl opacity-50"></i>
+                        </div>
                     </button>
                 </div>
             </div>
@@ -492,200 +893,300 @@
         <!-- Bottom Navigation -->
         <nav class="bottom-nav fixed bottom-0 left-0 right-0 p-4 z-20">
             <div class="flex justify-around">
-                <button class="nav-item active flex flex-col items-center space-y-1" data-page="home">
-                    <i class="fas fa-home text-xl"></i>
-                    <span class="text-xs">Home</span>
+                <button class="nav-item active flex flex-col items-center space-y-2" data-page="home">
+                    <i class="fas fa-home text-2xl"></i>
+                    <span class="text-xs font-semibold">Home</span>
                 </button>
-                <button class="nav-item flex flex-col items-center space-y-1" data-page="chat">
-                    <i class="fas fa-comments text-xl"></i>
-                    <span class="text-xs">Chat</span>
+                <button class="nav-item flex flex-col items-center space-y-2" data-page="chat">
+                    <i class="fas fa-comments text-2xl"></i>
+                    <span class="text-xs font-semibold">Chat</span>
                 </button>
-                <button class="nav-item flex flex-col items-center space-y-1" data-page="news">
-                    <i class="fas fa-newspaper text-xl"></i>
-                    <span class="text-xs">News</span>
+                <button class="nav-item flex flex-col items-center space-y-2" data-page="news">
+                    <i class="fas fa-newspaper text-2xl"></i>
+                    <span class="text-xs font-semibold">News</span>
                 </button>
-                <button class="nav-item flex flex-col items-center space-y-1" data-page="support">
-                    <i class="fas fa-headset text-xl"></i>
-                    <span class="text-xs">Support</span>
+                <button class="nav-item flex flex-col items-center space-y-2" data-page="support">
+                    <i class="fas fa-headset text-2xl"></i>
+                    <span class="text-xs font-semibold">Support</span>
                 </button>
-                <button class="nav-item flex flex-col items-center space-y-1" data-page="about">
-                    <i class="fas fa-info-circle text-xl"></i>
-                    <span class="text-xs">About</span>
+                <button class="nav-item flex flex-col items-center space-y-2" data-page="about">
+                    <i class="fas fa-info-circle text-2xl"></i>
+                    <span class="text-xs font-semibold">About</span>
                 </button>
-                <button class="nav-item flex flex-col items-center space-y-1" data-page="mi">
-                    <i class="fas fa-user text-xl"></i>
-                    <span class="text-xs">Mi</span>
+                <button class="nav-item flex flex-col items-center space-y-2" data-page="mi">
+                    <i class="fas fa-user text-2xl"></i>
+                    <span class="text-xs font-semibold">Mi</span>
                 </button>
             </div>
         </nav>
     </div>
 
     <!-- Purchase Modal -->
-    <div id="purchaseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up">
-            <div class="text-center mb-6">
-                <h3 class="text-white text-xl font-bold mb-2">Purchase File</h3>
+    <div id="purchaseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="glass-effect rounded-3xl p-8 w-full max-w-md mx-4 slide-up">
+            <div class="text-center mb-8">
+                <div class="feature-icon mx-auto mb-4">
+                    <i class="fas fa-shopping-cart text-2xl text-white"></i>
+                </div>
+                <h3 class="text-white text-2xl font-bold mb-3">Purchase File</h3>
                 <p class="text-white opacity-80">Complete your purchase | သင့်ဝယ်ယူမှုကို ပြီးစီးအောင်လုပ်ပါ</p>
             </div>
 
-            <div id="purchaseContent">
+            <div id="purchaseContent" class="space-y-6">
                 <!-- Purchase content will be loaded here -->
             </div>
 
-            <div class="flex space-x-3 mt-6">
-                <button id="cancelPurchase" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
-                <button id="confirmPurchase" class="flex-1 btn-primary text-white py-3 rounded-lg">Purchase</button>
+            <div class="flex space-x-4 mt-8">
+                <button id="cancelPurchase" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-4 rounded-xl font-semibold transition-all">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </button>
+                <button id="confirmPurchase" class="flex-1 btn-primary text-white py-4 rounded-xl font-semibold">
+                    <i class="fas fa-credit-card mr-2"></i>Purchase
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- Payment Proof Modal -->
+    <div id="paymentProofModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="glass-effect rounded-3xl p-8 w-full max-w-md mx-4 slide-up">
+            <div class="text-center mb-8">
+                <div class="feature-icon mx-auto mb-4">
+                    <i class="fas fa-receipt text-2xl text-white"></i>
+                </div>
+                <h3 class="text-white text-2xl font-bold mb-3">Upload Payment Proof</h3>
+                <p class="text-white opacity-80">Upload payment screenshot | ငွေပေးချေမှု ပုံရိပ်တင်ပါ</p>
+            </div>
+
+            <form id="paymentProofForm" class="space-y-6">
+                <div>
+                    <label class="block text-white text-sm font-medium mb-3">Payment Screenshot</label>
+                    <input type="file" id="paymentProofFile" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white" accept="image/*" required>
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-3">Transaction ID (Optional)</label>
+                    <input type="text" id="transactionId" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70" placeholder="Enter transaction ID">
+                </div>
+
+                <div class="flex space-x-4 mt-8">
+                    <button type="button" id="cancelPaymentProof" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-4 rounded-xl font-semibold transition-all">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="flex-1 btn-primary text-white py-4 rounded-xl font-semibold">
+                        <i class="fas fa-upload mr-2"></i>Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- News Profile Modal -->
-    <div id="newsProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up">
-            <div class="text-center mb-6">
-                <h3 class="text-white text-xl font-bold mb-2">Create News Profile</h3>
+    <div id="newsProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="glass-effect rounded-3xl p-8 w-full max-w-md mx-4 slide-up">
+            <div class="text-center mb-8">
+                <div class="feature-icon mx-auto mb-4">
+                    <i class="fas fa-user-edit text-2xl text-white"></i>
+                </div>
+                <h3 class="text-white text-2xl font-bold mb-3">Create News Profile</h3>
                 <p class="text-white opacity-80">Set up your news profile | သင့်သတင်းပရိုဖိုင်ကို ပြင်ဆင်ပါ</p>
             </div>
 
-            <form id="newsProfileForm" class="space-y-4">
+            <form id="newsProfileForm" class="space-y-6">
                 <div>
-                    <label class="block text-white text-sm font-medium mb-2">Username</label>
-                    <input type="text" id="newsUsername" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter username">
+                    <label class="block text-white text-sm font-medium mb-3">Username</label>
+                    <input type="text" id="newsUsername" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70" placeholder="Enter unique username" required>
+                    <p class="text-white opacity-60 text-xs mt-2">This will be your unique identifier</p>
                 </div>
                 
                 <div>
-                    <label class="block text-white text-sm font-medium mb-2">Display Name</label>
-                    <input type="text" id="newsDisplayName" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter display name">
+                    <label class="block text-white text-sm font-medium mb-3">Display Name</label>
+                    <input type="text" id="newsDisplayName" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70" placeholder="Enter display name" required>
                 </div>
                 
                 <div>
-                    <label class="block text-white text-sm font-medium mb-2">Profile Picture</label>
-                    <input type="file" id="newsProfilePicture" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" accept="image/*,.gif">
+                    <label class="block text-white text-sm font-medium mb-3">Profile Picture</label>
+                    <input type="file" id="newsProfilePicture" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white" accept="image/*,.gif">
+                    <p class="text-white opacity-60 text-xs mt-2">Supports images and GIFs</p>
                 </div>
 
-                <div class="flex space-x-3 mt-6">
-                    <button type="button" id="cancelNewsProfile" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
-                    <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-lg">Create</button>
+                <div class="flex space-x-4 mt-8">
+                    <button type="button" id="cancelNewsProfile" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-4 rounded-xl font-semibold transition-all">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="flex-1 btn-primary text-white py-4 rounded-xl font-semibold">
+                        <i class="fas fa-check mr-2"></i>Create
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Create News Modal -->
-    <div id="createNewsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up max-h-90vh overflow-y-auto">
-            <div class="text-center mb-6">
-                <h3 class="text-white text-xl font-bold mb-2">Create News Post</h3>
+    <div id="createNewsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="glass-effect rounded-3xl p-8 w-full max-w-lg mx-4 slide-up max-h-90vh overflow-y-auto scrollbar-hidden">
+            <div class="text-center mb-8">
+                <div class="feature-icon mx-auto mb-4">
+                    <i class="fas fa-newspaper text-2xl text-white"></i>
+                </div>
+                <h3 class="text-white text-2xl font-bold mb-3">Create News Post</h3>
                 <p class="text-white opacity-80">Share something with the community</p>
             </div>
 
-            <form id="createNewsForm" class="space-y-4">
+            <form id="createNewsForm" class="space-y-6">
                 <div>
-                    <label class="block text-white text-sm font-medium mb-2">Title</label>
-                    <input type="text" id="newsTitle" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter news title">
+                    <label class="block text-white text-sm font-medium mb-3">Title</label>
+                    <input type="text" id="newsTitle" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70" placeholder="Enter news title" required>
                 </div>
                 
                 <div>
-                    <label class="block text-white text-sm font-medium mb-2">Content</label>
-                    <textarea id="newsContent" rows="4" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Write your news content..."></textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-white text-sm font-medium mb-2">Media Files</label>
-                    <input type="file" id="newsMedia" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" multiple accept="image/*,video/*,audio/*,.gif">
+                    <label class="block text-white text-sm font-medium mb-3">Content</label>
+                    <textarea id="newsContent" rows="4" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 resize-none" placeholder="Write your news content..." required></textarea>
                 </div>
 
-                <div class="flex space-x-3 mt-6">
-                    <button type="button" id="cancelCreateNews" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
-                    <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-lg">Post</button>
+                <div>
+                    <label class="block text-white text-sm font-medium mb-3">Tag Users (Optional)</label>
+                    <input type="text" id="tagUsers" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70" placeholder="@username1 @username2">
+                    <p class="text-white opacity-60 text-xs mt-2">Tag users by typing @username</p>
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-3">Media Files (Optional)</label>
+                    <input type="file" id="newsMedia" class="w-full p-4 rounded-xl border-2 border-white border-opacity-20 bg-white bg-opacity-10 text-white" multiple accept="image/*,video/*,audio/*,.gif">
+                    <p class="text-white opacity-60 text-xs mt-2">Support images, videos, audio files and GIFs</p>
+                </div>
+
+                <div class="flex space-x-4 mt-8">
+                    <button type="button" id="cancelCreateNews" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-4 rounded-xl font-semibold transition-all">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="flex-1 btn-primary text-white py-4 rounded-xl font-semibold">
+                        <i class="fas fa-paper-plane mr-2"></i>Post
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  
-  <script>
-    // Configuration - ဒီနေရာမှာ သင့် Supabase credentials တွေကို ထည့်ပါ
-    const CONFIG = {
-      SUPABASE_URL: 'https://rmeudvhvqlddqqkiziyo.supabase.co', // သင့် URL ကို ထည့်ပါ
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZXVkdmh2cWxkZHFxa2l6aXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTMxOTIsImV4cCI6MjA2OTU2OTE5Mn0.xFgMv-K5o5yyTpe4U2YJK5jC9GPJp98G4cgD9p5W4ak', // သင့် Key ကို ထည့်ပါ
-      MAX_RETRY_ATTEMPTS: 3,
-      RETRY_DELAY: 2000,
-      CONNECTION_TIMEOUT: 10000
-    };
+    <!-- Chat Modal -->
+    <div id="chatModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="glass-effect rounded-3xl w-full max-w-md mx-4 slide-up flex flex-col" style="height: 600px;">
+            <!-- Chat Header -->
+            <div class="p-6 border-b border-white border-opacity-20">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div id="chatUserAvatar" class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h3 id="chatUserName" class="text-white font-semibold text-lg">User</h3>
+                            <p id="chatUserStatus" class="text-white opacity-70 text-sm">Online</p>
+                        </div>
+                    </div>
+                    <button id="closeChatModal" class="text-white opacity-70 hover:opacity-100 transition-opacity">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chatMessages" class="flex-1 overflow-y-auto scrollbar-hidden p-4 space-y-4">
+                <!-- Chat messages will appear here -->
+            </div>
+
+            <!-- Chat Input -->
+            <div class="p-4 border-t border-white border-opacity-20">
+                <div class="flex space-x-3">
+                    <input type="text" id="chatMessageInput" class="flex-1 p-3 rounded-xl bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-blue-500 border-2 border-white border-opacity-20" placeholder="Type a message...">
+                    <button id="sendChatMessage" class="btn-primary px-4 py-3 rounded-xl">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="hidden fixed top-4 right-4 z-60 notification">
+        <div class="glass-effect rounded-xl p-4 text-white max-w-sm">
+            <div class="flex items-center space-x-3">
+                <i id="toastIcon" class="fas fa-info-circle text-xl"></i>
+                <div>
+                    <h4 id="toastTitle" class="font-semibold">Notification</h4>
+                    <p id="toastMessage" class="text-sm opacity-90">Message content</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://rmeudvhvqlddqqkiziyo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZXVkdmh2cWxkZHFxa2l6aXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTMxOTIsImV4cCI6MjA2OTU2OTE5Mn0.xFgMv-K5o5yyTpe4U2YJK5jC9GPJp98G4cgD9p5W4ak';
+        
+        let supabase;
+        
+        // Initialize Supabase
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase initialized successfully');
+        } catch (error) {
+            console.error('Supabase initialization error:', error);
+            showNotification('Database connection failed', 'error');
+        }
+
         // Global State
-        let currentUser = null; // Stores the user object from our custom 'users' table
+        let currentUser = null;
         let currentPage = 'home';
         let files = [];
         let news = [];
         let chatList = [];
+        let currentChatUser = null;
+        let newsProfile = null;
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
-            // Check Supabase connection status
-            checkSupabaseConnection();
-
+            // Start loading animation
+            animateLoading();
+            
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
-                checkAuthStatus(); // Check custom authentication status
-            }, 3000);
+                document.getElementById('authScreen').classList.remove('hidden');
+            }, 4000);
 
             initializeEventListeners();
+            checkAuthStatus();
         });
 
-        // Check Supabase Connection Status
-        async function checkSupabaseConnection() {
-            try {
-                // Attempt a simple query to check connection
-                const { data, error } = await supabase.from('users').select('id').limit(1);
-                if (error) {
-                    console.error('Supabase Connection Error:', error.message);
-                    alert('Supabase connection failed! Please check your network or Supabase configuration.');
-                } else {
-                    console.log('Supabase connected successfully!');
+        // Loading Animation
+        function animateLoading() {
+            const progressBar = document.getElementById('loadingProgress');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
                 }
-            } catch (e) {
-                console.error('Supabase Connection Exception:', e.message);
-                alert('Supabase connection failed! An unexpected error occurred.');
-            }
+                progressBar.style.width = progress + '%';
+            }, 200);
         }
 
-        // Check Custom Authentication Status
+        // Check Authentication Status
         async function checkAuthStatus() {
-            const userId = localStorage.getItem('user_id');
-            if (userId) {
-                try {
-                    const { data: user, error } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('id', userId)
-                        .single();
-
-                    if (error || !user) {
-                        console.error('Error fetching user data for session:', error?.message || 'User not found');
-                        localStorage.removeItem('user_id'); // Clear invalid session
-                        showAuthScreen();
-                        return;
-                    }
+            if (!supabase) return;
+            
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
                     currentUser = user;
+                    await loadUserData();
                     showMainApp();
-                } catch (error) {
-                    console.error('Error during session check:', error);
-                    localStorage.removeItem('user_id');
-                    showAuthScreen();
                 }
-            } else {
-                showAuthScreen();
+            } catch (error) {
+                console.error('Auth check error:', error);
             }
-        }
-
-        function showAuthScreen() {
-            document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('mainApp').classList.add('hidden');
-            showLoginForm();
         }
 
         // Initialize Event Listeners
@@ -706,26 +1207,46 @@
 
             // Modals
             document.getElementById('cancelPurchase').addEventListener('click', closePurchaseModal);
+            document.getElementById('confirmPurchase').addEventListener('click', handlePurchaseConfirm);
+            
             document.getElementById('createNewsProfileBtn').addEventListener('click', showNewsProfileModal);
             document.getElementById('cancelNewsProfile').addEventListener('click', closeNewsProfileModal);
             document.getElementById('newsProfileForm').addEventListener('submit', handleCreateNewsProfile);
+            
             document.getElementById('createNewsBtn').addEventListener('click', showCreateNewsModal);
             document.getElementById('cancelCreateNews').addEventListener('click', closeCreateNewsModal);
             document.getElementById('createNewsForm').addEventListener('submit', handleCreateNews);
 
+            document.getElementById('closeChatModal').addEventListener('click', closeChatModal);
+            document.getElementById('sendChatMessage').addEventListener('click', sendChatMessage);
+            document.getElementById('chatMessageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendChatMessage();
+            });
+
             // Support Chat
             document.getElementById('sendSupportMessage').addEventListener('click', sendSupportMessage);
             document.getElementById('supportMessageInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendSupportMessage();
-                }
+                if (e.key === 'Enter') sendSupportMessage();
             });
+            document.getElementById('attachFileBtn').addEventListener('click', () => {
+                document.getElementById('supportFileInput').click();
+            });
+            document.getElementById('supportFileInput').addEventListener('change', handleSupportFileUpload);
+
+            // Payment Proof
+            document.getElementById('cancelPaymentProof').addEventListener('click', closePaymentProofModal);
+            document.getElementById('paymentProofForm').addEventListener('submit', handlePaymentProofSubmit);
+
+            // Search
+            document.getElementById('fileSearchInput').addEventListener('input', handleFileSearch);
+            document.getElementById('userSearchInput').addEventListener('input', handleUserSearch);
+            document.getElementById('searchUsersBtn').addEventListener('click', searchUsers);
 
             // Logout
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
         }
 
-        // Custom Authentication Functions
+        // Authentication Functions
         function showSignupForm() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('signupForm').classList.remove('hidden');
@@ -739,133 +1260,237 @@
         async function handleSignup(e) {
             e.preventDefault();
             
-            const name = document.getElementById('signupName').value;
+            if (!supabase) {
+                showNotification('Database connection failed', 'error');
+                return;
+            }
+            
+            const name = document.getElementById('signupName').value.trim();
             const country = document.getElementById('signupCountry').value;
-            const phone = document.getElementById('signupPhone').value;
+            const phone = document.getElementById('signupPhone').value.trim();
             const password = document.getElementById('signupPassword').value;
+            
+            if (!name || !phone || !password) {
+                showNotification('Please fill all fields | ကျေးဇူးပြု၍ အကွက်များအားလုံးကို ဖြည့်ပါ', 'error');
+                return;
+            }
             
             const fullPhone = country + phone;
 
-            if (!name || !phone || !password) {
-                alert('Please fill in all fields.');
-                return;
-            }
-
             try {
                 // Check if phone already exists
-                const { data: existingUser, error: existingUserError } = await supabase
+                const { data: existingUser } = await supabase
                     .from('users')
-                    .select('id')
+                    .select('*')
                     .eq('phone', fullPhone)
                     .single();
 
-                if (existingUserError && existingUserError.code !== 'PGRST116') { // PGRST116 means no rows found
-                    throw existingUserError;
-                }
                 if (existingUser) {
-                    alert('Phone number already registered! | ဖုန်းနံပါတ်သည် မှတ်ပုံတင်ပြီးသားဖြစ်ပါသည်!');
+                    showNotification('Phone number already registered! | ဖုန်းနံပါတ်သည် မှတ်ပုံတင်ပြီးသားဖြစ်ပါသည်!', 'error');
                     return;
                 }
 
-                // Hash the password using the PostgreSQL function
-                const { data: hashedPassword, error: hashError } = await supabase.rpc('hash_password', { password_to_hash: password });
-                if (hashError) throw hashError;
+                // Create user account
+                const { data, error } = await supabase.auth.signUp({
+                    email: `${fullPhone.replace('+', '')}@pgopper.com`,
+                    password: password,
+                });
 
-                // Insert user data into our custom 'users' table
-                const { data: newUser, error: insertError } = await supabase
+                if (error) throw error;
+
+                // Insert user data
+                const { error: insertError } = await supabase
                     .from('users')
                     .insert([
                         {
+                            id: data.user.id,
                             name: name,
                             phone: fullPhone,
                             country: country,
-                            hashed_password: hashedPassword,
+                            password: password, // Store as text as requested
+                            status: 'active',
                             created_at: new Date().toISOString()
                         }
-                    ])
-                    .select()
-                    .single();
+                    ]);
 
                 if (insertError) throw insertError;
 
-                alert('Account created successfully! Please login. | အကောင့်ဖန်တီးပြီးပါပြီ! ကျေးဇူးပြု၍ ဝင်ရောက်ပါ။');
+                showNotification('Account created successfully! Please login. | အကောင့်ဖန်တီးပြီးပါပြီ! ကျေးဇူးပြု၍ ဝင်ရောက်ပါ။', 'success');
                 showLoginForm();
+                
+                // Clear form
+                document.getElementById('signupFormElement').reset();
             } catch (error) {
-                console.error('Error creating account:', error);
-                alert('Error creating account: ' + error.message);
+                console.error('Signup error:', error);
+                showNotification('Error creating account: ' + error.message, 'error');
             }
         }
 
         async function handleLogin(e) {
             e.preventDefault();
             
+            if (!supabase) {
+                showNotification('Database connection failed', 'error');
+                return;
+            }
+            
             const country = document.getElementById('loginCountry').value;
-            const phone = document.getElementById('loginPhone').value;
+            const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value;
+            
+            if (!phone || !password) {
+                showNotification('Please fill all fields | ကျေးဇူးပြု၍ အကွက်များအားလုံးကို ဖြည့်ပါ', 'error');
+                return;
+            }
             
             const fullPhone = country + phone;
 
-            if (!phone || !password) {
-                alert('Please enter phone number and password.');
-                return;
-            }
-
             try {
-                // Retrieve user by phone number
-                const { data: user, error: userError } = await supabase
+                // Check user in database
+                const { data: userData, error: userError } = await supabase
                     .from('users')
                     .select('*')
                     .eq('phone', fullPhone)
+                    .eq('password', password)
                     .single();
 
-                if (userError || !user) {
-                    alert('Login failed: Invalid phone number or password.');
+                if (userError || !userData) {
+                    showNotification('Invalid phone number or password | ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားနေပါသည်', 'error');
                     return;
                 }
 
-                // Check password using the PostgreSQL function
-                const { data: passwordMatch, error: checkError } = await supabase.rpc('check_password', { 
-                    password_to_check: password, 
-                    hashed_password_in_db: user.hashed_password 
+                if (userData.status === 'banned') {
+                    showNotification('Your account has been banned | သင့်အကောင့်ကို ပိတ်ထားပါသည်', 'error');
+                    return;
+                }
+
+                // Sign in with Supabase auth
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: `${fullPhone.replace('+', '')}@pgopper.com`,
+                    password: password,
                 });
 
-                if (checkError || !passwordMatch) {
-                    alert('Login failed: Invalid phone number or password.');
-                    return;
-                }
+                if (error) throw error;
 
-                if (user.is_banned) {
-                    alert('Your account has been banned. Please contact support.');
-                    return;
-                }
-
-                currentUser = user;
-                localStorage.setItem('user_id', user.id); // Store user ID for session
+                currentUser = data.user;
+                await loadUserData();
                 showMainApp();
+                showNotification('Login successful! | အကောင့်ဝင်ရောက်မှု အောင်မြင်ပါသည်!', 'success');
+                
+                // Clear form
+                document.getElementById('loginFormElement').reset();
             } catch (error) {
-                console.error('Login failed:', error);
-                alert('Login failed: ' + error.message);
+                console.error('Login error:', error);
+                showNotification('Login failed: ' + error.message, 'error');
             }
         }
 
         async function handleLogout() {
-            localStorage.removeItem('user_id'); // Clear user session
-            currentUser = null;
-            document.getElementById('mainApp').classList.add('hidden');
-            document.getElementById('authScreen').classList.remove('hidden');
-            showLoginForm();
-            alert('Logged out successfully!');
+            if (!supabase) return;
+            
+            const { error } = await supabase.auth.signOut();
+            if (!error) {
+                currentUser = null;
+                newsProfile = null;
+                document.getElementById('mainApp').classList.add('hidden');
+                document.getElementById('authScreen').classList.remove('hidden');
+                showLoginForm();
+                showNotification('Logged out successfully | အကောင့်မှ ထွက်ပြီးပါပြီ', 'info');
+            }
         }
 
         // Main App Functions
-        function showMainApp() {
+        async function showMainApp() {
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
-            loadUserProfile();
-            loadFiles();
-            loadNews();
-            loadAboutContent();
-            setupRealtimeSubscriptions(); // Setup real-time after user is authenticated
+            
+            await Promise.all([
+                loadFiles(),
+                loadNews(),
+                loadAboutContent(),
+                loadPurchaseHistory(),
+                loadChatList()
+            ]);
+            
+            // Start real-time subscriptions
+            setupRealtimeSubscriptions();
+        }
+
+        async function loadUserData() {
+            if (!currentUser || !supabase) return;
+            
+            try {
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (userData) {
+                    document.getElementById('profileName').textContent = userData.name || 'User';
+                    document.getElementById('profilePhone').textContent = userData.phone || '';
+                    document.getElementById('profileCountry').textContent = getCountryName(userData.country) || 'Unknown';
+                }
+
+                // Load news profile
+                const { data: newsProfileData } = await supabase
+                    .from('news_profiles')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (newsProfileData) {
+                    newsProfile = newsProfileData;
+                }
+
+                // Update stats
+                await updateUserStats();
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        async function updateUserStats() {
+            if (!currentUser || !supabase) return;
+            
+            try {
+                // Load purchase count
+                const { data: purchases } = await supabase
+                    .from('purchases')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('status', 'approved');
+
+                document.getElementById('purchaseCount').textContent = purchases?.length || 0;
+
+                // Load news count
+                const { data: userNews } = await supabase
+                    .from('news')
+                    .select('*')
+                    .eq('user_id', currentUser.id);
+
+                document.getElementById('newsCount').textContent = userNews?.length || 0;
+
+                // Load chat count
+                const { data: chats } = await supabase
+                    .from('chats')
+                    .select('*')
+                    .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
+
+                document.getElementById('chatCount').textContent = chats?.length || 0;
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        function getCountryName(code) {
+            const countries = {
+                '+95': 'Myanmar',
+                '+86': 'China',
+                '+65': 'Singapore',
+                '+66': 'Thailand'
+            };
+            return countries[code] || 'Unknown';
         }
 
         function switchPage(page) {
@@ -888,121 +1513,26 @@
                 loadNews();
             } else if (page === 'support') {
                 loadSupportMessages();
-            }
-        }
-
-        // User Profile Functions
-        async function loadUserProfile() {
-            if (!currentUser) return;
-            try {
-                const { data: userData, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single();
-
-                if (error || !userData) {
-                    console.error('Error loading profile:', error?.message || 'User data not found');
-                    return;
-                }
-
-                document.getElementById('profileName').textContent = userData.name || 'User';
-                document.getElementById('profilePhone').textContent = userData.phone || '';
-
-                // Load purchase count
-                const { data: purchases, error: purchasesError } = await supabase
-                    .from('purchases')
-                    .select('id')
-                    .eq('user_id', currentUser.id);
-
-                if (purchasesError) throw purchasesError;
-                document.getElementById('purchaseCount').textContent = purchases?.length || 0;
-
-                // Load news count
-                const { data: userNewsProfiles, error: newsProfileError } = await supabase
-                    .from('news_profiles')
-                    .select('id')
-                    .eq('user_id', currentUser.id);
-                
-                if (newsProfileError) throw newsProfileError;
-
-                let totalNewsPosts = 0;
-                if (userNewsProfiles && userNewsProfiles.length > 0) {
-                    for (const profile of userNewsProfiles) {
-                        const { data: newsPosts, error: newsPostsError } = await supabase
-                            .from('news')
-                            .select('id')
-                            .eq('news_profile_id', profile.id);
-                        if (newsPostsError) throw newsPostsError;
-                        totalNewsPosts += newsPosts?.length || 0;
-                    }
-                }
-                document.getElementById('newsCount').textContent = totalNewsPosts;
-
+            } else if (page === 'mi') {
                 loadPurchaseHistory();
-            } catch (error) {
-                console.error('Error loading profile:', error);
-            }
-        }
-
-        async function loadPurchaseHistory() {
-            if (!currentUser) return;
-            try {
-                const { data: purchases, error } = await supabase
-                    .from('purchases')
-                    .select(`
-                        *,
-                        files (
-                            name,
-                            type,
-                            price
-                        )
-                    `)
-                    .eq('user_id', currentUser.id)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                const historyContainer = document.getElementById('purchaseHistory');
-                historyContainer.innerHTML = '';
-
-                if (purchases && purchases.length > 0) {
-                    purchases.forEach(purchase => {
-                        const purchaseElement = document.createElement('div');
-                        purchaseElement.className = 'bg-white bg-opacity-20 rounded-lg p-3 flex justify-between items-center';
-                        purchaseElement.innerHTML = `
-                            <div>
-                                <h4 class="text-white font-semibold">${purchase.files?.name || 'Unknown File'}</h4>
-                                <p class="text-white opacity-70 text-sm">$${purchase.files?.price || '0.00'}</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-green-400 text-sm font-semibold">${purchase.status}</span>
-                                <p class="text-white opacity-70 text-xs">${new Date(purchase.created_at).toLocaleDateString()}</p>
-                            </div>
-                        `;
-                        historyContainer.appendChild(purchaseElement);
-                    });
-                } else {
-                    historyContainer.innerHTML = '<p class="text-white opacity-70 text-center">No purchases yet</p>';
-                }
-            } catch (error) {
-                console.error('Error loading purchase history:', error);
             }
         }
 
         // Files Functions
         async function loadFiles() {
+            if (!supabase) return;
+            
             try {
-                const { data: filesData, error } = await supabase
+                const { data: filesData } = await supabase
                     .from('files')
                     .select('*')
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
                 files = filesData || [];
                 displayFiles();
             } catch (error) {
                 console.error('Error loading files:', error);
+                showNotification('Error loading files', 'error');
             }
         }
 
@@ -1022,73 +1552,62 @@
             files.forEach(file => {
                 const fileElement = document.createElement('div');
                 fileElement.className = 'file-card card-hover';
+                
+                const iconClass = file.file_type === 'apk' ? 'fab fa-android' : 'fas fa-file-alt';
+                const typeLabel = file.file_type === 'apk' ? 'APK' : 'FILE';
+                
                 fileElement.innerHTML = `
-                    <div class="text-center">
-                        <div class="w-16 h-16 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
-                            <i class="fas ${getFileIcon(file.type)} text-2xl text-white"></i>
+                    <div class="text-center mb-4">
+                        <div class="feature-icon mx-auto mb-3">
+                            <i class="${iconClass} text-2xl text-blue-600"></i>
                         </div>
-                        <h3 class="font-semibold text-gray-800 mb-2">${file.name}</h3>
-                        <p class="text-gray-600 text-sm mb-3">${file.description}</p>
-                        <div class="text-lg font-bold text-purple-600 mb-3">$${file.price}</div>
-                        <button onclick="initiatesPurchase('${file.id}')" class="w-full btn-primary text-white py-2 rounded-lg text-sm">
-                            <i class="fas fa-download mr-2"></i>Download
-                        </button>
+                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mb-2">${typeLabel}</span>
                     </div>
+                    <h3 class="font-bold text-gray-800 mb-2 text-center text-sm">${file.name}</h3>
+                    <p class="text-gray-600 text-xs mb-3 text-center line-clamp-2">${file.description || 'No description'}</p>
+                    <div class="text-center mb-4">
+                        <span class="text-2xl font-bold text-green-600">$${file.price}</span>
+                    </div>
+                    <button onclick="purchaseFile('${file.id}')" class="w-full btn-primary text-white py-3 rounded-xl font-semibold text-sm">
+                        <i class="fas fa-shopping-cart mr-2"></i>Buy Now
+                    </button>
                 `;
+                
                 fileGrid.appendChild(fileElement);
             });
         }
 
-        function getFileIcon(fileType) {
-            const iconMap = {
-                'apk': 'fa-android',
-                'pdf': 'fa-file-pdf',
-                'doc': 'fa-file-word',
-                'zip': 'fa-file-archive',
-                'mp3': 'fa-file-audio',
-                'mp4': 'fa-file-video',
-                'image': 'fa-file-image',
-                'file': 'fa-file' // Default for generic files
-            };
-            return iconMap[fileType] || 'fa-file';
-        }
-
-        async function initiatesPurchase(fileId) {
+        async function purchaseFile(fileId) {
             if (!currentUser) {
-                alert('Please login to purchase files.');
-                showAuthScreen();
+                showNotification('Please login first', 'error');
                 return;
             }
 
-            const file = files.find(f => f.id === fileId);
-            if (!file) {
-                alert('File not found.');
-                return;
+            try {
+                const file = files.find(f => f.id === fileId);
+                if (!file) return;
+
+                // Check if already purchased
+                const { data: existingPurchase } = await supabase
+                    .from('purchases')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('file_id', fileId)
+                    .eq('status', 'approved')
+                    .single();
+
+                if (existingPurchase) {
+                    // Allow download
+                    downloadFile(file);
+                    return;
+                }
+
+                // Show purchase modal
+                showPurchaseModal(file);
+            } catch (error) {
+                console.error('Purchase error:', error);
+                showNotification('Error processing purchase', 'error');
             }
-
-            // Check if already purchased and approved
-            const { data: existingPurchase, error: existingPurchaseError } = await supabase
-                .from('purchases')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .eq('file_id', fileId)
-                .eq('status', 'approved')
-                .single();
-
-            if (existingPurchaseError && existingPurchaseError.code !== 'PGRST116') {
-                console.error('Error checking existing purchase:', existingPurchaseError);
-                alert('Error checking purchase status. Please try again.');
-                return;
-            }
-
-            if (existingPurchase) {
-                // Direct download if already approved
-                downloadFile(file);
-                return;
-            }
-
-            // Show purchase modal
-            showPurchaseModal(file);
         }
 
         function showPurchaseModal(file) {
@@ -1096,148 +1615,185 @@
             const content = document.getElementById('purchaseContent');
             
             content.innerHTML = `
-                <div class="text-center mb-4">
-                    <div class="w-20 h-20 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
-                        <i class="fas ${getFileIcon(file.type)} text-3xl text-white"></i>
+                <div class="text-center mb-6">
+                    <div class="feature-icon mx-auto mb-4">
+                        <i class="fas fa-${file.file_type === 'apk' ? 'mobile-alt' : 'file-alt'} text-2xl text-white"></i>
                     </div>
-                    <h4 class="text-white text-lg font-bold">${file.name}</h4>
-                    <p class="text-white opacity-80">${file.description}</p>
-                    <div class="text-2xl font-bold text-yellow-400 mt-2">$${file.price}</div>
+                    <h4 class="text-white text-xl font-bold mb-2">${file.name}</h4>
+                    <p class="text-white opacity-80 mb-4">${file.description || 'No description'}</p>
+                    <div class="text-center">
+                        <span class="text-3xl font-bold text-green-400">$${file.price}</span>
+                    </div>
                 </div>
                 
-                <div class="space-y-3">
-                    <h5 class="text-white font-semibold">Payment Methods:</h5>
-                    <div id="paymentMethodsContainer" class="space-y-2">
-                        <!-- Payment methods will be loaded here -->
-                    </div>
+                <div class="space-y-4" id="paymentMethods">
+                    <h5 class="text-white font-semibold mb-3">Choose Payment Method:</h5>
+                    <!-- Payment methods will be loaded here -->
                 </div>
             `;
 
-            // Load payment methods
-            loadPaymentMethodsForPurchase(file);
-
-            // Set up confirm purchase button
-            document.getElementById('confirmPurchase').onclick = () => confirmPurchase(file);
-
+            loadPaymentMethods(file.id);
             modal.classList.remove('hidden');
         }
 
-        async function loadPaymentMethodsForPurchase(file) {
+        async function loadPaymentMethods(fileId) {
+            if (!supabase) return;
+            
             try {
-                const { data: paymentMethods, error } = await supabase
+                const { data: methods } = await supabase
                     .from('payment_methods')
                     .select('*')
-                    .eq('is_active', true)
-                    .order('name', { ascending: true });
+                    .eq('active', true);
 
-                if (error) throw error;
-
-                const container = document.getElementById('paymentMethodsContainer');
-                container.innerHTML = '';
-
-                if (paymentMethods && paymentMethods.length > 0) {
-                    paymentMethods.forEach((method, index) => {
-                        const optionElement = document.createElement('div');
-                        optionElement.className = `payment-option ${index === 0 ? 'selected' : ''}`;
-                        optionElement.dataset.methodId = method.id;
-                        optionElement.innerHTML = `
-                            <h6 class="font-semibold text-white">${method.name}</h6>
-                            <p class="text-sm opacity-80 text-white">${method.account_number}</p>
-                            ${method.qr_code_path ? `<img src="${getStoragePublicUrl('qr-codes', method.qr_code_path)}" alt="QR Code" class="w-24 h-24 mt-2 rounded-lg">` : ''}
-                        `;
-                        optionElement.addEventListener('click', () => {
-                            container.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
-                            optionElement.classList.add('selected');
-                        });
-                        container.appendChild(optionElement);
-                    });
-                } else {
-                    container.innerHTML = '<p class="text-white opacity-70 text-center">No active payment methods available.</p>';
-                    document.getElementById('confirmPurchase').disabled = true;
+                const container = document.getElementById('paymentMethods');
+                if (!methods || methods.length === 0) {
+                    container.innerHTML += '<p class="text-white opacity-70">No payment methods available</p>';
+                    return;
                 }
+
+                methods.forEach(method => {
+                    const methodElement = document.createElement('div');
+                    methodElement.className = 'payment-option';
+                    methodElement.onclick = () => selectPaymentMethod(method, fileId);
+                    
+                    methodElement.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                ${method.qr_code ? `<img src="${method.qr_code}" alt="QR" class="w-10 h-10 rounded">` : '<i class="fas fa-credit-card text-2xl text-white"></i>'}
+                                <div>
+                                    <h6 class="text-white font-semibold">${method.name}</h6>
+                                    <p class="text-white opacity-70 text-sm">${method.phone || method.account_info || ''}</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-white opacity-50"></i>
+                        </div>
+                    `;
+                    
+                    container.appendChild(methodElement);
+                });
             } catch (error) {
-                console.error('Error loading payment methods for purchase:', error);
-                alert('Error loading payment methods.');
+                console.error('Error loading payment methods:', error);
             }
         }
 
-        async function confirmPurchase(file) {
-            if (!currentUser) {
-                alert('You must be logged in to make a purchase.');
-                return;
-            }
+        function selectPaymentMethod(method, fileId) {
+            // Remove previous selections
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            // Update confirm button
+            const confirmBtn = document.getElementById('confirmPurchase');
+            confirmBtn.onclick = () => proceedToPayment(method, fileId);
+        }
 
-            const selectedMethod = document.querySelector('#paymentMethodsContainer .payment-option.selected');
-            if (!selectedMethod) {
-                alert('Please select a payment method.');
+        function proceedToPayment(method, fileId) {
+            closePurchaseModal();
+            showPaymentProofModal(method, fileId);
+        }
+
+        function showPaymentProofModal(method, fileId) {
+            const modal = document.getElementById('paymentProofModal');
+            const form = document.getElementById('paymentProofForm');
+            
+            form.onsubmit = (e) => handlePaymentProofSubmit(e, method, fileId);
+            modal.classList.remove('hidden');
+        }
+
+        async function handlePaymentProofSubmit(e, method, fileId) {
+            e.preventDefault();
+            
+            if (!currentUser || !supabase) return;
+            
+            const fileInput = document.getElementById('paymentProofFile');
+            const transactionId = document.getElementById('transactionId').value;
+            
+            if (!fileInput.files[0]) {
+                showNotification('Please select payment proof image', 'error');
                 return;
             }
 
             try {
-                const { error } = await supabase
+                // Upload payment proof
+                const file = fileInput.files[0];
+                const fileName = `payment_${currentUser.id}_${Date.now()}.${file.name.split('.').pop()}`;
+                
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('payment_proofs')
+                    .upload(fileName, file);
+
+                if (uploadError) throw uploadError;
+
+                // Create purchase record
+                const { error: purchaseError } = await supabase
                     .from('purchases')
                     .insert([
                         {
                             user_id: currentUser.id,
-                            file_id: file.id,
-                            amount: file.price,
-                            status: 'pending', // Initial status is pending
+                            file_id: fileId,
+                            payment_method_id: method.id,
+                            amount: files.find(f => f.id === fileId).price,
+                            payment_proof: uploadData.path,
+                            transaction_id: transactionId,
+                            status: 'pending',
                             created_at: new Date().toISOString()
                         }
                     ]);
 
-                if (error) throw error;
+                if (purchaseError) throw purchaseError;
 
-                alert('Purchase request submitted! Please complete the payment using the selected method. Your download will be available once approved by admin.');
-                closePurchaseModal();
-                loadPurchaseHistory(); // Refresh purchase history
+                closePaymentProofModal();
+                showNotification('Purchase request submitted! Please wait for admin approval. | ဝယ်ယူမှုတောင်းဆိုချက် ပေးပို့ပြီးပါပြီ! အက်ဒမင် အတည်ပြုချက် စောင့်ပါ။', 'success');
+                
+                // Reset form
+                document.getElementById('paymentProofForm').reset();
             } catch (error) {
-                console.error('Error confirming purchase:', error);
-                alert('Error submitting purchase: ' + error.message);
+                console.error('Payment proof error:', error);
+                showNotification('Error submitting payment proof', 'error');
             }
         }
 
-        function closePurchaseModal() {
-            document.getElementById('purchaseModal').classList.add('hidden');
-        }
-
         async function downloadFile(file) {
+            if (!supabase) return;
+            
             try {
-                // Get file URL from Supabase storage
-                const { data } = supabase.storage
+                const { data } = await supabase.storage
                     .from('files')
-                    .getPublicUrl(file.file_path);
+                    .createSignedUrl(file.file_path, 3600);
 
-                // Create download link
-                const link = document.createElement('a');
-                link.href = data.publicUrl;
-                link.download = file.name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                alert('File download started!');
+                if (data.signedUrl) {
+                    const link = document.createElement('a');
+                    link.href = data.signedUrl;
+                    link.download = file.name;
+                    link.click();
+                    
+                    showNotification('Download started! | ဒေါင်းလုဒ် စတင်ပြီးပါပြီ!', 'success');
+                }
             } catch (error) {
-                console.error('Error downloading file:', error);
-                alert('Error downloading file. Please try again.');
+                console.error('Download error:', error);
+                showNotification('Error downloading file', 'error');
             }
         }
 
         // News Functions
         async function loadNews() {
+            if (!supabase) return;
+            
             try {
-                const { data: newsData, error } = await supabase
+                const { data: newsData } = await supabase
                     .from('news')
                     .select(`
                         *,
                         news_profiles (
                             username,
                             display_name,
-                            profile_picture_url
+                            profile_picture
+                        ),
+                        users (
+                            name
                         )
                     `)
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
                 news = newsData || [];
                 displayNews();
             } catch (error) {
@@ -1258,136 +1814,79 @@
             emptyState.classList.add('hidden');
             newsFeed.innerHTML = '';
 
-            news.forEach(item => {
+            news.forEach(newsItem => {
                 const newsElement = document.createElement('div');
                 newsElement.className = 'news-card glass-effect p-6';
+                
+                const authorName = newsItem.news_profiles?.display_name || newsItem.users?.name || 'Unknown';
+                const authorUsername = newsItem.news_profiles?.username || '';
+                const authorAvatar = newsItem.news_profiles?.profile_picture || '';
+                
                 newsElement.innerHTML = `
-                    <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
-                            ${item.news_profiles?.profile_picture_url ? 
-                                `<img src="${getStoragePublicUrl('news-profiles', item.news_profiles.profile_picture_url)}" class="w-full h-full rounded-full object-cover" alt="Profile Picture">` :
-                                `<i class="fas fa-user text-white"></i>`
-                            }
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center overflow-hidden">
+                            ${authorAvatar ? `<img src="${authorAvatar}" alt="${authorName}" class="w-full h-full object-cover">` : `<i class="fas fa-user text-white"></i>`}
                         </div>
                         <div>
-                            <h4 class="text-white font-semibold">${item.news_profiles?.display_name || 'Anonymous'}</h4>
-                            <p class="text-white opacity-70 text-sm">@${item.news_profiles?.username || 'anonymous'}</p>
+                            <h4 class="text-white font-semibold">${authorName}</h4>
+                            <p class="text-white opacity-70 text-sm">@${authorUsername} • ${formatDate(newsItem.created_at)}</p>
                         </div>
                     </div>
                     
-                    <h3 class="text-white text-lg font-bold mb-2">${item.title}</h3>
-                    <p class="text-white opacity-90 mb-4">${item.content}</p>
+                    <h3 class="text-white text-lg font-bold mb-3">${newsItem.title}</h3>
+                    <p class="text-white opacity-90 mb-4 leading-relaxed">${newsItem.content}</p>
                     
-                    ${item.media_urls && item.media_urls.length > 0 ? `
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            ${item.media_urls.slice(0, 4).map(url => `
-                                <div class="rounded-lg overflow-hidden">
-                                    ${url.includes('.mp4') || url.includes('.mov') ? 
-                                        `<video controls class="w-full h-32 object-cover"><source src="${getStoragePublicUrl('news-media', url)}" type="video/mp4"></video>` :
-                                        `<img src="${getStoragePublicUrl('news-media', url)}" class="w-full h-32 object-cover" alt="News Media">`
-                                    }
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
+                    ${newsItem.media_files ? displayNewsMedia(newsItem.media_files) : ''}
                     
-                    <div class="flex items-center justify-between text-white opacity-70 text-sm">
-                        <span>${new Date(item.created_at).toLocaleDateString()}</span>
-                        <button onclick="shareNews('${item.id}')" class="hover:opacity-100 transition-opacity">
-                            <i class="fas fa-share mr-1"></i>Share
+                    <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
+                        <button onclick="likeNews('${newsItem.id}')" class="flex items-center space-x-2 text-white opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="fas fa-heart"></i>
+                            <span>Like</span>
+                        </button>
+                        <button onclick="shareNews('${newsItem.id}')" class="flex items-center space-x-2 text-white opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="fas fa-share"></i>
+                            <span>Share</span>
                         </button>
                     </div>
                 `;
+                
                 newsFeed.appendChild(newsElement);
             });
         }
 
-        function showNewsProfileModal() {
-            if (!currentUser) {
-                alert('Please login to create a news profile.');
-                showAuthScreen();
-                return;
-            }
-            document.getElementById('newsProfileModal').classList.remove('hidden');
-        }
-
-        function closeNewsProfileModal() {
-            document.getElementById('newsProfileModal').classList.add('hidden');
-            document.getElementById('newsProfileForm').reset();
-        }
-
-        async function handleCreateNewsProfile(e) {
-            e.preventDefault();
-            if (!currentUser) return;
+        function displayNewsMedia(mediaFiles) {
+            if (!mediaFiles || mediaFiles.length === 0) return '';
             
-            const username = document.getElementById('newsUsername').value;
-            const displayName = document.getElementById('newsDisplayName').value;
-            const profilePicture = document.getElementById('newsProfilePicture').files[0];
-
-            if (!username || !displayName) {
-                alert('Username and Display Name are required.');
-                return;
-            }
-
-            try {
-                // Check if username already exists
-                const { data: existingProfile, error: existingProfileError } = await supabase
-                    .from('news_profiles')
-                    .select('id')
-                    .eq('username', username)
-                    .single();
-
-                if (existingProfileError && existingProfileError.code !== 'PGRST116') {
-                    throw existingProfileError;
+            let mediaHtml = '<div class="grid grid-cols-2 gap-3 mb-4">';
+            
+            mediaFiles.forEach((file, index) => {
+                if (index >= 4) return; // Limit to 4 media files
+                
+                const fileExtension = file.split('.').pop().toLowerCase();
+                
+                if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                    mediaHtml += `<img src="${file}" alt="News media" class="rounded-lg w-full h-32 object-cover">`;
+                } else if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
+                    mediaHtml += `<video controls class="rounded-lg w-full h-32 object-cover">
+                        <source src="${file}" type="video/${fileExtension}">
+                    </video>`;
+                } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+                    mediaHtml += `<audio controls class="w-full">
+                        <source src="${file}" type="audio/${fileExtension}">
+                    </audio>`;
                 }
-                if (existingProfile) {
-                    alert('Username already exists! Please choose another.');
-                    return;
-                }
-
-                let profilePicturePath = null;
-
-                // Upload profile picture if provided
-                if (profilePicture) {
-                    const fileName = `${currentUser.id}/${Date.now()}-${profilePicture.name}`;
-                    const { data: uploadData, error: uploadError } = await supabase.storage
-                        .from('news-profiles')
-                        .upload(fileName, profilePicture);
-
-                    if (uploadError) throw uploadError;
-                    profilePicturePath = uploadData.path;
-                }
-
-                // Create news profile
-                const { error } = await supabase
-                    .from('news_profiles')
-                    .insert([
-                        {
-                            user_id: currentUser.id,
-                            username: username,
-                            display_name: displayName,
-                            profile_picture_url: profilePicturePath,
-                            created_at: new Date().toISOString()
-                        }
-                    ]);
-
-                if (error) throw error;
-
-                alert('News profile created successfully!');
-                closeNewsProfileModal();
-                loadUserProfile(); // Refresh profile data
-            } catch (error) {
-                console.error('Error creating news profile:', error);
-                alert('Error creating news profile: ' + error.message);
-            }
+            });
+            
+            mediaHtml += '</div>';
+            return mediaHtml;
         }
 
         function showCreateNewsModal() {
-            if (!currentUser) {
-                alert('Please login to create a news post.');
-                showAuthScreen();
+            if (!newsProfile) {
+                showNotification('Please create a news profile first | ကျေးဇူးပြု၍ သတင်းပရိုဖိုင် ဖန်တီးပါ', 'error');
                 return;
             }
+            
             document.getElementById('createNewsModal').classList.remove('hidden');
         }
 
@@ -1398,153 +1897,476 @@
 
         async function handleCreateNews(e) {
             e.preventDefault();
-            if (!currentUser) return;
             
-            const title = document.getElementById('newsTitle').value;
-            const content = document.getElementById('newsContent').value;
+            if (!currentUser || !newsProfile || !supabase) return;
+            
+            const title = document.getElementById('newsTitle').value.trim();
+            const content = document.getElementById('newsContent').value.trim();
+            const tagUsers = document.getElementById('tagUsers').value.trim();
             const mediaFiles = document.getElementById('newsMedia').files;
-
+            
             if (!title || !content) {
-                alert('Title and Content are required.');
+                showNotification('Please fill all required fields', 'error');
                 return;
             }
 
             try {
-                // Check if user has news profile
-                const { data: profile, error: profileError } = await supabase
-                    .from('news_profiles')
-                    .select('id')
-                    .eq('user_id', currentUser.id)
-                    .single();
-
-                if (profileError || !profile) {
-                    alert('Please create a news profile first before posting news!');
-                    console.error('News profile not found for user:', profileError);
-                    return;
-                }
-
-                let mediaPaths = [];
-
-                // Upload media files if provided
+                let uploadedFiles = [];
+                
+                // Upload media files
                 if (mediaFiles.length > 0) {
-                    for (let i = 0; i < mediaFiles.length; i++) {
-                        const file = mediaFiles[i];
-                        const fileName = `${currentUser.id}/${Date.now()}-${file.name}`;
+                    for (let file of mediaFiles) {
+                        const fileName = `news_${currentUser.id}_${Date.now()}_${file.name}`;
                         const { data: uploadData, error: uploadError } = await supabase.storage
-                            .from('news-media')
+                            .from('news_media')
                             .upload(fileName, file);
 
                         if (uploadError) throw uploadError;
-                        mediaPaths.push(uploadData.path);
+                        
+                        const { data } = await supabase.storage
+                            .from('news_media')
+                            .getPublicUrl(uploadData.path);
+                        
+                        uploadedFiles.push(data.publicUrl);
                     }
                 }
 
                 // Create news post
-                const { error } = await supabase
+                const { error: newsError } = await supabase
                     .from('news')
                     .insert([
                         {
-                            news_profile_id: profile.id,
+                            user_id: currentUser.id,
+                            news_profile_id: newsProfile.id,
                             title: title,
                             content: content,
-                            media_urls: mediaPaths,
+                            media_files: uploadedFiles,
+                            tagged_users: tagUsers ? tagUsers.split(' ').filter(tag => tag.startsWith('@')).map(tag => tag.slice(1)) : [],
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (newsError) throw newsError;
+
+                closeCreateNewsModal();
+                showNotification('News posted successfully! | သတင်း တင်ပြီးပါပြီ!', 'success');
+                await loadNews();
+                await updateUserStats();
+            } catch (error) {
+                console.error('Create news error:', error);
+                showNotification('Error creating news post', 'error');
+            }
+        }
+
+        function showNewsProfileModal() {
+            document.getElementById('newsProfileModal').classList.remove('hidden');
+        }
+
+        function closeNewsProfileModal() {
+            document.getElementById('newsProfileModal').classList.add('hidden');
+            document.getElementById('newsProfileForm').reset();
+        }
+
+        async function handleCreateNewsProfile(e) {
+            e.preventDefault();
+            
+            if (!currentUser || !supabase) return;
+            
+            const username = document.getElementById('newsUsername').value.trim();
+            const displayName = document.getElementById('newsDisplayName').value.trim();
+            const profilePicture = document.getElementById('newsProfilePicture').files[0];
+            
+            if (!username || !displayName) {
+                showNotification('Please fill all required fields', 'error');
+                return;
+            }
+
+            try {
+                // Check if username already exists
+                const { data: existingProfile } = await supabase
+                    .from('news_profiles')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+
+                if (existingProfile) {
+                    showNotification('Username already taken | အသုံးပြုသူအမည် ရှိပြီးသားဖြစ်ပါသည်', 'error');
+                    return;
+                }
+
+                let profilePictureUrl = null;
+                
+                // Upload profile picture
+                if (profilePicture) {
+                    const fileName = `profile_${currentUser.id}_${Date.now()}.${profilePicture.name.split('.').pop()}`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('profile_pictures')
+                        .upload(fileName, profilePicture);
+
+                    if (uploadError) throw uploadError;
+                    
+                    const { data } = await supabase.storage
+                        .from('profile_pictures')
+                        .getPublicUrl(uploadData.path);
+                    
+                    profilePictureUrl = data.publicUrl;
+                }
+
+                // Create news profile
+                const { data: profileData, error: profileError } = await supabase
+                    .from('news_profiles')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            username: username,
+                            display_name: displayName,
+                            profile_picture: profilePictureUrl,
+                            created_at: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+
+                if (profileError) throw profileError;
+
+                newsProfile = profileData;
+                closeNewsProfileModal();
+                showNotification('News profile created successfully! | သတင်းပရိုဖိုင် ဖန်တီးပြီးပါပြီ!', 'success');
+            } catch (error) {
+                console.error('Create news profile error:', error);
+                showNotification('Error creating news profile', 'error');
+            }
+        }
+
+        // Chat Functions
+        async function loadChatList() {
+            if (!currentUser || !supabase) return;
+            
+            try {
+                const { data: chats } = await supabase
+                    .from('chats')
+                    .select(`
+                        *,
+                        user1:users!chats_user1_id_fkey (
+                            id,
+                            name,
+                            phone
+                        ),
+                        user2:users!chats_user2_id_fkey (
+                            id,
+                            name,
+                            phone
+                        )
+                    `)
+                    .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
+                    .order('last_message_at', { ascending: false });
+
+                chatList = chats || [];
+                displayChatList();
+            } catch (error) {
+                console.error('Error loading chat list:', error);
+            }
+        }
+
+        function displayChatList() {
+            const chatListElement = document.getElementById('chatList');
+            const emptyState = document.getElementById('emptyChatState');
+
+            if (chatList.length === 0) {
+                chatListElement.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            chatListElement.innerHTML = '';
+
+            chatList.forEach(chat => {
+                const otherUser = chat.user1_id === currentUser.id ? chat.user2 : chat.user1;
+                
+                const chatElement = document.createElement('div');
+                chatElement.className = 'glass-effect rounded-xl p-4 cursor-pointer hover:bg-white hover:bg-opacity-10 transition-all card-hover';
+                chatElement.onclick = () => openChat(otherUser);
+                
+                chatElement.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-white font-semibold">${otherUser.name}</h4>
+                            <p class="text-white opacity-70 text-sm">${chat.last_message || 'Start conversation'}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-white opacity-60 text-xs">${chat.last_message_at ? formatDate(chat.last_message_at) : ''}</p>
+                        </div>
+                    </div>
+                `;
+                
+                chatListElement.appendChild(chatElement);
+            });
+        }
+
+        async function searchUsers() {
+            const query = document.getElementById('userSearchInput').value.trim();
+            if (!query || !supabase) return;
+
+            try {
+                const { data: users } = await supabase
+                    .from('news_profiles')
+                    .select(`
+                        *,
+                        users (
+                            id,
+                            name,
+                            phone
+                        )
+                    `)
+                    .ilike('username', `%${query}%`)
+                    .limit(10);
+
+                displaySearchResults(users || []);
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        function displaySearchResults(users) {
+            const chatListElement = document.getElementById('chatList');
+            
+            if (users.length === 0) {
+                chatListElement.innerHTML = '<p class="text-white opacity-70 text-center py-8">No users found</p>';
+                return;
+            }
+
+            chatListElement.innerHTML = '';
+            
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'glass-effect rounded-xl p-4 cursor-pointer hover:bg-white hover:bg-opacity-10 transition-all card-hover';
+                userElement.onclick = () => startChat(user.users);
+                
+                userElement.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full overflow-hidden">
+                            ${user.profile_picture ? `<img src="${user.profile_picture}" alt="${user.display_name}" class="w-full h-full object-cover">` : '<div class="w-full h-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center"><i class="fas fa-user text-white"></i></div>'}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-white font-semibold">${user.display_name}</h4>
+                            <p class="text-white opacity-70 text-sm">@${user.username}</p>
+                        </div>
+                        <i class="fas fa-comment text-white opacity-50"></i>
+                    </div>
+                `;
+                
+                chatListElement.appendChild(userElement);
+            });
+        }
+
+        async function startChat(user) {
+            if (!currentUser || !supabase) return;
+            
+            try {
+                // Check if chat already exists
+                let { data: existingChat } = await supabase
+                    .from('chats')
+                    .select('*')
+                    .or(`and(user1_id.eq.${currentUser.id},user2_id.eq.${user.id}),and(user1_id.eq.${user.id},user2_id.eq.${currentUser.id})`)
+                    .single();
+
+                if (!existingChat) {
+                    // Create new chat
+                    const { data: newChat, error } = await supabase
+                        .from('chats')
+                        .insert([
+                            {
+                                user1_id: currentUser.id,
+                                user2_id: user.id,
+                                created_at: new Date().toISOString(),
+                                last_message_at: new Date().toISOString()
+                            }
+                        ])
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    existingChat = newChat;
+                }
+
+                openChat(user, existingChat.id);
+            } catch (error) {
+                console.error('Start chat error:', error);
+                showNotification('Error starting chat', 'error');
+            }
+        }
+
+        function openChat(user, chatId = null) {
+            currentChatUser = user;
+            
+            // Update chat modal
+            document.getElementById('chatUserName').textContent = user.name;
+            document.getElementById('chatUserStatus').textContent = 'Online';
+            
+            // Load chat messages
+            loadChatMessages(chatId);
+            
+            // Show chat modal
+            document.getElementById('chatModal').classList.remove('hidden');
+        }
+
+        async function loadChatMessages(chatId) {
+            if (!chatId || !supabase) return;
+            
+            try {
+                const { data: messages } = await supabase
+                    .from('chat_messages')
+                    .select('*')
+                    .eq('chat_id', chatId)
+                    .order('created_at', { ascending: true });
+
+                displayChatMessages(messages || []);
+            } catch (error) {
+                console.error('Error loading chat messages:', error);
+            }
+        }
+
+        function displayChatMessages(messages) {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = '';
+
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = '<p class="text-white opacity-70 text-center py-8">Start your conversation!</p>';
+                return;
+            }
+
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `chat-bubble p-3 ${message.sender_id === currentUser.id ? 'sent' : 'received'}`;
+                
+                messageElement.innerHTML = `
+                    <p class="mb-1">${message.content}</p>
+                    <p class="text-xs opacity-70">${formatTime(message.created_at)}</p>
+                `;
+                
+                messagesContainer.appendChild(messageElement);
+            });
+
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatMessageInput');
+            const message = input.value.trim();
+            
+            if (!message || !currentChatUser || !currentUser || !supabase) return;
+
+            try {
+                // Find chat ID
+                const { data: chat } = await supabase
+                    .from('chats')
+                    .select('*')
+                    .or(`and(user1_id.eq.${currentUser.id},user2_id.eq.${currentChatUser.id}),and(user1_id.eq.${currentChatUser.id},user2_id.eq.${currentUser.id})`)
+                    .single();
+
+                if (!chat) return;
+
+                // Send message
+                const { error } = await supabase
+                    .from('chat_messages')
+                    .insert([
+                        {
+                            chat_id: chat.id,
+                            sender_id: currentUser.id,
+                            content: message,
                             created_at: new Date().toISOString()
                         }
                     ]);
 
                 if (error) throw error;
 
-                alert('News posted successfully!');
-                closeCreateNewsModal();
-                loadNews();
-                loadUserProfile(); // Refresh news count on profile
+                // Update chat last message
+                await supabase
+                    .from('chats')
+                    .update({
+                        last_message: message,
+                        last_message_at: new Date().toISOString()
+                    })
+                    .eq('id', chat.id);
+
+                input.value = '';
+                loadChatMessages(chat.id);
             } catch (error) {
-                console.error('Error creating news:', error);
-                alert('Error creating news: ' + error.message);
+                console.error('Send message error:', error);
+                showNotification('Error sending message', 'error');
             }
         }
 
-        function shareNews(newsId) {
-            // In a real app, you'd generate a unique URL for the news post
-            const shareUrl = `${window.location.origin}/news/${newsId}`; 
-            if (navigator.share) {
-                navigator.share({
-                    title: 'PG-OPPER News',
-                    text: 'Check out this news from PG-OPPER',
-                    url: shareUrl
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    alert('Link copied to clipboard!');
-                }).catch(err => {
-                    console.error('Could not copy text: ', err);
-                    alert('Could not copy link. Please copy it manually: ' + shareUrl);
-                });
-            }
-        }
-
-        // Chat Functions (Placeholder for now, as full chat requires more complex setup)
-        async function loadChatList() {
-            // This would typically load a list of conversations the user is part of.
-            // For this example, we'll keep it simple and just show the empty state.
-            const chatListContainer = document.getElementById('chatList');
-            const emptyState = document.getElementById('emptyChatState');
-            
-            chatListContainer.innerHTML = '';
-            emptyState.classList.remove('hidden');
-            console.log('Chat functionality is a placeholder. Full implementation requires backend chat logic.');
+        function closeChatModal() {
+            document.getElementById('chatModal').classList.add('hidden');
+            currentChatUser = null;
         }
 
         // Support Functions
         async function loadSupportMessages() {
-            if (!currentUser) return;
+            if (!currentUser || !supabase) return;
+            
             try {
-                const { data: messages, error } = await supabase
+                const { data: messages } = await supabase
                     .from('support_messages')
                     .select('*')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: true });
 
-                if (error) throw error;
-
-                const messagesContainer = document.getElementById('supportMessages');
-                messagesContainer.innerHTML = '';
-
-                if (messages && messages.length > 0) {
-                    messages.forEach(message => {
-                        const messageElement = document.createElement('div');
-                        messageElement.className = `flex ${message.is_admin_message ? 'justify-start' : 'justify-end'} mb-3`;
-                        messageElement.innerHTML = `
-                            <div class="chat-bubble ${message.is_admin_message ? 'received' : 'sent'} p-3 max-w-xs">
-                                <p class="text-sm">${message.content}</p>
-                                <span class="text-xs opacity-70">${new Date(message.created_at).toLocaleTimeString()}</span>
-                            </div>
-                        `;
-                        messagesContainer.appendChild(messageElement);
-                    });
-                    
-                    // Scroll to bottom
-                    document.getElementById('supportChatContainer').scrollTop = document.getElementById('supportChatContainer').scrollHeight;
-                } else {
-                    messagesContainer.innerHTML = '<p class="text-white opacity-70 text-center">No support messages yet. Send a message to start a conversation.</p>';
-                }
+                displaySupportMessages(messages || []);
             } catch (error) {
                 console.error('Error loading support messages:', error);
             }
         }
 
-        async function sendSupportMessage() {
-            if (!currentUser) {
-                alert('Please login to send a support message.');
-                showAuthScreen();
-                return;
+        function displaySupportMessages(messages) {
+            const messagesContainer = document.getElementById('supportMessages');
+            
+            // Keep welcome message and add new messages
+            const welcomeMessage = messagesContainer.querySelector('.chat-bubble.received');
+            messagesContainer.innerHTML = '';
+            
+            if (welcomeMessage) {
+                messagesContainer.appendChild(welcomeMessage);
             }
 
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `chat-bubble p-4 ${message.is_admin ? 'received' : 'sent'}`;
+                
+                let content = `<p class="mb-2">${message.content}</p>`;
+                
+                if (message.file_url) {
+                    const fileExtension = message.file_url.split('.').pop().toLowerCase();
+                    if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                        content += `<img src="${message.file_url}" alt="Attachment" class="max-w-full h-32 object-cover rounded-lg mb-2">`;
+                    } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+                        content += `<audio controls class="mb-2"><source src="${message.file_url}"></audio>`;
+                    } else {
+                        content += `<a href="${message.file_url}" target="_blank" class="text-blue-300 underline mb-2 block">View Attachment</a>`;
+                    }
+                }
+                
+                content += `<p class="text-xs opacity-70">${formatTime(message.created_at)}</p>`;
+                
+                messageElement.innerHTML = content;
+                messagesContainer.appendChild(messageElement);
+            });
+
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function sendSupportMessage() {
             const input = document.getElementById('supportMessageInput');
             const message = input.value.trim();
             
-            if (!message) return;
+            if (!message || !currentUser || !supabase) return;
 
             try {
                 const { error } = await supabase
@@ -1553,7 +2375,7 @@
                         {
                             user_id: currentUser.id,
                             content: message,
-                            is_admin_message: false, // Message from user
+                            is_admin: false,
                             created_at: new Date().toISOString()
                         }
                     ]);
@@ -1563,133 +2385,227 @@
                 input.value = '';
                 loadSupportMessages();
             } catch (error) {
-                console.error('Error sending support message:', error);
-                alert('Error sending message. Please try again.');
+                console.error('Send support message error:', error);
+                showNotification('Error sending message', 'error');
+            }
+        }
+
+        async function handleSupportFileUpload() {
+            const fileInput = document.getElementById('supportFileInput');
+            const file = fileInput.files[0];
+            
+            if (!file || !currentUser || !supabase) return;
+
+            try {
+                // Upload file
+                const fileName = `support_${currentUser.id}_${Date.now()}.${file.name.split('.').pop()}`;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('support_files')
+                    .upload(fileName, file);
+
+                if (uploadError) throw uploadError;
+
+                const { data } = await supabase.storage
+                    .from('support_files')
+                    .getPublicUrl(uploadData.path);
+
+                // Send message with file
+                const { error } = await supabase
+                    .from('support_messages')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            content: `Sent a file: ${file.name}`,
+                            file_url: data.publicUrl,
+                            is_admin: false,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                fileInput.value = '';
+                loadSupportMessages();
+                showNotification('File sent successfully', 'success');
+            } catch (error) {
+                console.error('File upload error:', error);
+                showNotification('Error uploading file', 'error');
             }
         }
 
         // About Functions
         async function loadAboutContent() {
+            if (!supabase) return;
+            
             try {
-                const { data: aboutData, error } = await supabase
-                    .from('about_content')
+                const { data: aboutItems } = await supabase
+                    .from('about_items')
                     .select('*')
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
-
-                const aboutContentContainer = document.getElementById('aboutContent');
-                const defaultAbout = document.getElementById('defaultAbout');
-
-                if (aboutData && aboutData.length > 0) {
-                    defaultAbout.classList.add('hidden');
-                    aboutContentContainer.innerHTML = '';
-                    
-                    aboutData.forEach(item => {
-                        const aboutElement = document.createElement('div');
-                        aboutElement.className = 'glass-effect rounded-xl p-6 mb-4';
-                        aboutElement.innerHTML = `
-                            <h3 class="text-white text-xl font-bold mb-4">${item.name}</h3>
-                            ${item.link ? `
-                                <a href="${item.link}" target="_blank" class="flex items-center space-x-2 bg-white bg-opacity-20 rounded-lg p-3 hover:bg-opacity-30 transition-colors">
-                                    ${item.icon_url ? `<img src="${getStoragePublicUrl('about-icons', item.icon_url)}" class="w-6 h-6" alt="Icon">` : `<i class="fas fa-link text-white"></i>`}
-                                    <span class="text-white">${item.link}</span>
-                                </a>
-                            ` : ''}
-                        `;
-                        aboutContentContainer.appendChild(aboutElement);
-                    });
-                } else {
-                    defaultAbout.classList.remove('hidden');
-                    aboutContentContainer.innerHTML = ''; // Ensure no old content if default is shown
-                }
+                displayAboutContent(aboutItems || []);
             } catch (error) {
                 console.error('Error loading about content:', error);
             }
         }
 
-        // Utility Functions
-        function getStoragePublicUrl(bucketName, path) {
-            // Supabase public URL format: https://[PROJECT_REF].supabase.co/storage/v1/object/public/[BUCKET_NAME]/[PATH_TO_FILE]
-            return `${SUPABASE_URL}/storage/v1/object/public/${bucketName}/${path}`;
+        function displayAboutContent(items) {
+            const aboutContent = document.getElementById('aboutContent');
+            const defaultAbout = document.getElementById('defaultAbout');
+
+            if (items.length === 0) {
+                aboutContent.innerHTML = '';
+                defaultAbout.classList.remove('hidden');
+                return;
+            }
+
+            defaultAbout.classList.add('hidden');
+            aboutContent.innerHTML = '';
+
+            items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'glass-effect rounded-2xl p-6 card-hover';
+                
+                itemElement.innerHTML = `
+                    <div class="flex items-center space-x-4 mb-4">
+                        ${item.icon ? `<img src="${item.icon}" alt="${item.name}" class="w-12 h-12 rounded-full">` : '<i class="fas fa-link text-2xl text-white"></i>'}
+                        <div>
+                            <h3 class="text-white text-xl font-bold">${item.name}</h3>
+                            ${item.link ? `<a href="${item.link}" target="_blank" class="text-blue-300 hover:text-blue-200 text-sm transition-colors">Visit Link</a>` : ''}
+                        </div>
+                    </div>
+                    ${item.description ? `<p class="text-white opacity-90">${item.description}</p>` : ''}
+                `;
+                
+                aboutContent.appendChild(itemElement);
+            });
         }
 
-        // Real-time subscriptions
+        // Purchase History
+        async function loadPurchaseHistory() {
+            if (!currentUser || !supabase) return;
+            
+            try {
+                const { data: purchases } = await supabase
+                    .from('purchases')
+                    .select(`
+                        *,
+                        files (
+                            name,
+                            file_type,
+                            price,
+                            file_path
+                        )
+                    `)
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                displayPurchaseHistory(purchases || []);
+            } catch (error) {
+                console.error('Error loading purchase history:', error);
+            }
+        }
+
+        function displayPurchaseHistory(purchases) {
+            const historyContainer = document.getElementById('purchaseHistory');
+            historyContainer.innerHTML = '';
+
+            if (purchases.length === 0) {
+                historyContainer.innerHTML = '<p class="text-white opacity-70 text-center py-4">No purchases yet | ဝယ်ယူမှု မရှိသေးပါ</p>';
+                return;
+            }
+
+            purchases.forEach(purchase => {
+                const purchaseElement = document.createElement('div');
+                purchaseElement.className = 'bg-white bg-opacity-20 rounded-xl p-4 flex justify-between items-center';
+                
+                const statusColor = purchase.status === 'approved' ? 'text-green-400' : 
+                                   purchase.status === 'rejected' ? 'text-red-400' : 'text-yellow-400';
+                
+                purchaseElement.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-${purchase.files.file_type === 'apk' ? 'mobile-alt' : 'file-alt'} text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold">${purchase.files.name}</h4>
+                            <p class="text-white opacity-70 text-sm">$${purchase.files.price} • ${formatDate(purchase.created_at)}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="${statusColor} text-sm font-semibold capitalize">${purchase.status}</span>
+                        ${purchase.status === 'approved' ? `<button onclick="downloadPurchasedFile('${purchase.files.file_path}', '${purchase.files.name}')" class="block mt-2 btn-primary text-white px-4 py-2 rounded-lg text-xs">Download</button>` : ''}
+                    </div>
+                `;
+                
+                historyContainer.appendChild(purchaseElement);
+            });
+        }
+
+        async function downloadPurchasedFile(filePath, fileName) {
+            if (!supabase) return;
+            
+            try {
+                const { data } = await supabase.storage
+                    .from('files')
+                    .createSignedUrl(filePath, 3600);
+
+                if (data.signedUrl) {
+                    const link = document.createElement('a');
+                    link.href = data.signedUrl;
+                    link.download = fileName;
+                    link.click();
+                    
+                    showNotification('Download started! | ဒေါင်းလုဒ် စတင်ပြီးပါပြီ!', 'success');
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                showNotification('Error downloading file', 'error');
+            }
+        }
+
+        // Real-time Subscriptions
         function setupRealtimeSubscriptions() {
-            // Unsubscribe from previous channels if any
-            supabase.removeAllChannels();
+            if (!supabase || !currentUser) return;
 
             // Subscribe to new files
             supabase
-                .channel('files_changes')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'files' }, payload => {
-                    console.log('Realtime: New file added!', payload);
-                    loadFiles();
-                })
-                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'files' }, payload => {
-                    console.log('Realtime: File updated!', payload);
-                    loadFiles();
-                })
-                .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'files' }, payload => {
-                    console.log('Realtime: File deleted!', payload);
+                .channel('files')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'files' }, () => {
                     loadFiles();
                 })
                 .subscribe();
 
-            // Subscribe to news changes
+            // Subscribe to news updates
             supabase
-                .channel('news_changes')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'news' }, payload => {
-                    console.log('Realtime: News changed!', payload);
+                .channel('news')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'news' }, () => {
                     loadNews();
                 })
                 .subscribe();
 
-            // Subscribe to support messages for the current user
-            if (currentUser) {
-                supabase
-                    .channel(`support_messages_${currentUser.id}`)
-                    .on('postgres_changes', { 
-                        event: 'INSERT', 
-                        schema: 'public', 
-                        table: 'support_messages',
-                        filter: `user_id=eq.${currentUser.id}`
-                    }, payload => {
-                        console.log('Realtime: New support message!', payload);
-                        if (currentPage === 'support') {
-                            loadSupportMessages();
-                        }
-                    })
-                    .subscribe();
-            }
-
-            // Subscribe to about content changes
+            // Subscribe to support messages
             supabase
-                .channel('about_content_changes')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'about_content' }, payload => {
-                    console.log('Realtime: About content changed!', payload);
-                    loadAboutContent();
+                .channel('support_messages')
+                .on('postgres_changes', { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'support_messages',
+                    filter: `user_id=eq.${currentUser.id}`
+                }, () => {
+                    loadSupportMessages();
+                    }
                 })
                 .subscribe();
-
-            // Subscribe to purchases changes (for user's own history)
-            if (currentUser) {
-                supabase
-                    .channel(`purchases_changes_${currentUser.id}`)
-                    .on('postgres_changes', { 
-                        event: '*', 
-                        schema: 'public', 
-                        table: 'purchases',
-                        filter: `user_id=eq.${currentUser.id}`
-                    }, payload => {
-                        console.log('Realtime: Purchase changed!', payload);
-                        if (currentPage === 'mi') {
-                            loadPurchaseHistory();
-                        }
-                    })
-                    .subscribe();
-            }
         }
+
+        // Initialize real-time subscriptions when user is authenticated
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                currentUser = session.user;
+                setupRealtimeSubscriptions();
+            }
+        });
     </script>
 </body>
 </html>
