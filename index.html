@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PG-OPPER - Digital Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .myanmar-gradient {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .myanmar-map {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            position: relative;
+            animation: spin 2s linear infinite;
+        }
+
+        .myanmar-map::before {
+            content: '🇲🇲';
+            font-size: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tab-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .chat-bubble {
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble.sent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            border-radius: 18px 18px 5px 18px;
+        }
+
+        .chat-bubble.received {
+            background: #f1f1f1;
+            color: #333;
+            margin-right: auto;
+            border-radius: 18px 18px 18px 5px;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            40% { color: black; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            60% { text-shadow: .25em 0 0 black, .5em 0 0 rgba(0,0,0,0); }
+            80%, 100% { text-shadow: .25em 0 0 black, .5em 0 0 black; }
+        }
+
+        .news-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .file-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .file-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .payment-option {
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover, .payment-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="myanmar-gradient min-h-screen">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 z-50 flex items-center justify-center myanmar-gradient">
+        <div class="text-center">
+            <div class="myanmar-map mb-4"></div>
+            <h2 class="text-white text-2xl font-bold mb-2">PG-OPPER</h2>
+            <p class="text-white opacity-80">Loading<span class="loading-dots"></span></p>
+        </div>
+    </div>
+
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-2xl p-8 w-full max-w-md">
+            <!-- Login Form -->
+            <div id="loginForm" class="fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-2">PG-OPPER</h1>
+                    <p class="text-white opacity-80">Welcome Back | ပြန်လည်ကြိုဆိုပါသည်</p>
+                </div>
+                
+                <form id="loginFormElement" class="space-y-6">
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Country | နိုင်ငံ</label>
+                        <select id="loginCountry" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="+95">🇲🇲 Myanmar (+95)</option>
+                            <option value="+86">🇨🇳 China (+86)</option>
+                            <option value="+65">🇸🇬 Singapore (+65)</option>
+                            <option value="+66">🇹🇭 Thailand (+66)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Phone Number | ဖုန်းနံပါတ်</label>
+                        <input type="tel" id="loginPhone" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter phone number">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Password | စကားဝှက်</label>
+                        <input type="password" id="loginPassword" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter password">
+                    </div>
+                    
+                    <button type="submit" class="w-full btn-primary text-white font-semibold py-3 rounded-lg">
+                        Login | အကောင့်ဝင်ရန်
+                    </button>
+                </form>
+                
+                <p class="text-center text-white mt-6">
+                    Don't have an account? | အကောင့်မရှိဘူးလား?
+                    <button id="showSignup" class="text-yellow-300 font-semibold ml-1">Sign Up | အကောင့်ဖွင့်ရန်</button>
+                </p>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="hidden">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
+                    <p class="text-white opacity-80">Join PG-OPPER | PG-OPPER သို့ ဝင်ရောက်ပါ</p>
+                </div>
+                
+                <form id="signupFormElement" class="space-y-6">
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Name | အမည်</label>
+                        <input type="text" id="signupName" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Country | နိုင်ငံ</label>
+                        <select id="signupCountry" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="+95">🇲🇲 Myanmar (+95)</option>
+                            <option value="+86">🇨🇳 China (+86)</option>
+                            <option value="+65">🇸🇬 Singapore (+65)</option>
+                            <option value="+66">🇹🇭 Thailand (+66)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Phone Number | ဖုန်းနံပါတ်</label>
+                        <input type="tel" id="signupPhone" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter phone number">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Password | စကားဝှက်</label>
+                        <input type="password" id="signupPassword" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Create password">
+                    </div>
+                    
+                    <button type="submit" class="w-full btn-primary text-white font-semibold py-3 rounded-lg">
+                        Create Account | အကောင့်ဖန်တီးရန်
+                    </button>
+                </form>
+                
+                <p class="text-center text-white mt-6">
+                    Already have an account? | အကောင့်ရှိပြီးလား?
+                    <button id="showLogin" class="text-yellow-300 font-semibold ml-1">Login | အကောင့်ဝင်ရန်</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden min-h-screen pb-20">
+        <!-- Header -->
+        <header class="glass-effect text-white p-4 sticky top-0 z-30">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold">PG-OPPER</h1>
+                <div class="flex items-center space-x-4">
+                    <button id="searchBtn" class="p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-search text-lg"></i>
+                    </button>
+                    <button id="profileBtn" class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                        <i class="fas fa-user text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Pages -->
+        <div class="container mx-auto px-4 py-6">
+            <!-- Home Page -->
+            <div id="homePage" class="page fade-in">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">Digital Store | ဒစ်ဂျစ်တယ် ဆိုင်</h2>
+                    <p class="text-white opacity-80">Download files and apps | ဖိုင်များနှင့် အက်ပ်များ ဒေါင်းလုဒ်လုပ်ပါ</p>
+                </div>
+
+                <div id="fileGrid" class="file-grid">
+                    <!-- Files will be loaded here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="text-center py-12">
+                    <i class="fas fa-download text-6xl text-white opacity-50 mb-4"></i>
+                    <h3 class="text-white text-xl font-semibold mb-2">No Files Available</h3>
+                    <p class="text-white opacity-70">Files will appear here when uploaded by admin</p>
+                </div>
+            </div>
+
+            <!-- Chat Page -->
+            <div id="chatPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">Messages | စာများ</h2>
+                    <p class="text-white opacity-80">Chat with other users | အခြားအသုံးပြုသူများနှင့် စကားပြောရန်</p>
+                </div>
+
+                <!-- Chat List -->
+                <div id="chatList" class="space-y-3">
+                    <!-- Chat items will be loaded here -->
+                </div>
+
+                <!-- Empty Chat State -->
+                <div id="emptyChatState" class="text-center py-12">
+                    <i class="fas fa-comments text-6xl text-white opacity-50 mb-4"></i>
+                    <h3 class="text-white text-xl font-semibold mb-2">No Conversations</h3>
+                    <p class="text-white opacity-70">Start chatting with other users</p>
+                </div>
+            </div>
+
+            <!-- News Page -->
+            <div id="newsPage" class="page hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-white text-2xl font-bold mb-2">News Feed | သတင်းများ</h2>
+                        <p class="text-white opacity-80">Latest updates and posts | နောက်ဆုံးပေါ် သတင်းများ</p>
+                    </div>
+                    <button id="createNewsBtn" class="btn-primary text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Post
+                    </button>
+                </div>
+
+                <div id="newsFeed" class="space-y-6">
+                    <!-- News items will be loaded here -->
+                </div>
+
+                <!-- Empty News State -->
+                <div id="emptyNewsState" class="text-center py-12">
+                    <i class="fas fa-newspaper text-6xl text-white opacity-50 mb-4"></i>
+                    <h3 class="text-white text-xl font-semibold mb-2">No News Yet</h3>
+                    <p class="text-white opacity-70">Be the first to share something!</p>
+                </div>
+            </div>
+
+            <!-- Support Page -->
+            <div id="supportPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">Support | အကူအညီ</h2>
+                    <p class="text-white opacity-80">Get help from admin | အက်ဒမင်ထံမှ အကူအညီယူပါ</p>
+                </div>
+
+                <!-- Support Chat -->
+                <div class="glass-effect rounded-xl p-4 mb-4" style="height: 400px; overflow-y: auto;" id="supportChatContainer">
+                    <div id="supportMessages" class="space-y-3">
+                        <!-- Support messages will appear here -->
+                    </div>
+                </div>
+
+                <!-- Support Message Input -->
+                <div class="glass-effect rounded-xl p-4">
+                    <div class="flex space-x-3">
+                        <input type="text" id="supportMessageInput" class="flex-1 p-3 rounded-lg border-0 bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70" placeholder="Type your message...">
+                        <button id="sendSupportMessage" class="btn-primary px-4 py-3 rounded-lg">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Page -->
+            <div id="aboutPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">About Us | ကျွန်ုပ်တို့အကြောင်း</h2>
+                    <p class="text-white opacity-80">Learn more about PG-OPPER</p>
+                </div>
+
+                <div id="aboutContent" class="space-y-6">
+                    <!-- About content will be loaded here -->
+                </div>
+
+                <!-- Default About Content -->
+                <div id="defaultAbout" class="glass-effect rounded-xl p-6">
+                    <h3 class="text-white text-xl font-bold mb-4">PG-OPPER Digital Marketplace</h3>
+                    <p class="text-white opacity-90 mb-4">
+                        PG-OPPER is your premier digital marketplace for files, applications, and digital content. 
+                        We provide a secure platform for users to discover, purchase, and download digital products.
+                    </p>
+                    <p class="text-white opacity-90">
+                        ကျွန်ုပ်တို့သည် ဒစ်ဂျစ်တယ်ဖိုင်များ၊ အက်ပ်လီကေးရှင်းများနှင့် ဒစ်ဂျစ်တယ်အကြောင်းအရာများအတွက် 
+                        ထိပ်တန်းစျေးကွက်ဖြစ်ပါသည်။
+                    </p>
+                </div>
+            </div>
+
+            <!-- Mi (Profile) Page -->
+            <div id="miPage" class="page hidden">
+                <div class="mb-6">
+                    <h2 class="text-white text-2xl font-bold mb-2">My Profile | ကျွန်ုပ်၏ပရိုဖိုင်</h2>
+                    <p class="text-white opacity-80">Manage your account | သင့်အကောင့်ကို စီမံပါ</p>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="glass-effect rounded-xl p-6 mb-6">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                            <i class="fas fa-user text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white text-xl font-bold" id="profileName">User</h3>
+                            <p class="text-white opacity-70" id="profilePhone">+95xxxxxxxxx</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <h4 class="text-white text-2xl font-bold" id="purchaseCount">0</h4>
+                            <p class="text-white opacity-70">Purchases</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <h4 class="text-white text-2xl font-bold" id="newsCount">0</h4>
+                            <p class="text-white opacity-70">News Posts</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase History -->
+                <div class="glass-effect rounded-xl p-6 mb-6">
+                    <h3 class="text-white text-lg font-bold mb-4">Purchase History | ဝယ်ယူမှုမှတ်တမ်း</h3>
+                    <div id="purchaseHistory" class="space-y-3">
+                        <!-- Purchase history will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="space-y-3">
+                    <button id="createNewsProfileBtn" class="w-full glass-effect text-white p-4 rounded-xl text-left">
+                        <i class="fas fa-newspaper mr-3"></i>Create News Profile | သတင်းပရိုဖိုင်ဖန်တီးရန်
+                    </button>
+                    <button id="logoutBtn" class="w-full bg-red-500 bg-opacity-80 text-white p-4 rounded-xl text-left">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Logout | ထွက်ရန်
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav fixed bottom-0 left-0 right-0 p-4 z-20">
+            <div class="flex justify-around">
+                <button class="nav-item active flex flex-col items-center space-y-1" data-page="home">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs">Home</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="chat">
+                    <i class="fas fa-comments text-xl"></i>
+                    <span class="text-xs">Chat</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="news">
+                    <i class="fas fa-newspaper text-xl"></i>
+                    <span class="text-xs">News</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="support">
+                    <i class="fas fa-headset text-xl"></i>
+                    <span class="text-xs">Support</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="about">
+                    <i class="fas fa-info-circle text-xl"></i>
+                    <span class="text-xs">About</span>
+                </button>
+                <button class="nav-item flex flex-col items-center space-y-1" data-page="mi">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-xs">Mi</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div id="purchaseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up">
+            <div class="text-center mb-6">
+                <h3 class="text-white text-xl font-bold mb-2">Purchase File</h3>
+                <p class="text-white opacity-80">Complete your purchase | သင့်ဝယ်ယူမှုကို ပြီးစီးအောင်လုပ်ပါ</p>
+            </div>
+
+            <div id="purchaseContent">
+                <!-- Purchase content will be loaded here -->
+            </div>
+
+            <div class="flex space-x-3 mt-6">
+                <button id="cancelPurchase" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
+                <button id="confirmPurchase" class="flex-1 btn-primary text-white py-3 rounded-lg">Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Profile Modal -->
+    <div id="newsProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up">
+            <div class="text-center mb-6">
+                <h3 class="text-white text-xl font-bold mb-2">Create News Profile</h3>
+                <p class="text-white opacity-80">Set up your news profile | သင့်သတင်းပရိုဖိုင်ကို ပြင်ဆင်ပါ</p>
+            </div>
+
+            <form id="newsProfileForm" class="space-y-4">
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Username</label>
+                    <input type="text" id="newsUsername" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter username">
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Display Name</label>
+                    <input type="text" id="newsDisplayName" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter display name">
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Profile Picture</label>
+                    <input type="file" id="newsProfilePicture" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" accept="image/*,.gif">
+                </div>
+
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" id="cancelNewsProfile" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
+                    <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-lg">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create News Modal -->
+    <div id="createNewsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div class="glass-effect rounded-2xl p-6 w-full max-w-md slide-up max-h-90vh overflow-y-auto">
+            <div class="text-center mb-6">
+                <h3 class="text-white text-xl font-bold mb-2">Create News Post</h3>
+                <p class="text-white opacity-80">Share something with the community</p>
+            </div>
+
+            <form id="createNewsForm" class="space-y-4">
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Title</label>
+                    <input type="text" id="newsTitle" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Enter news title">
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Content</label>
+                    <textarea id="newsContent" rows="4" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="Write your news content..."></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-white text-sm font-medium mb-2">Media Files</label>
+                    <input type="file" id="newsMedia" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" multiple accept="image/*,video/*,audio/*,.gif">
+                </div>
+
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" id="cancelCreateNews" class="flex-1 bg-gray-500 text-white py-3 rounded-lg">Cancel</button>
+                    <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-lg">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://rmeudvhvqlddqqkiziyo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZXVkdmh2cWxkZHFxa2l6aXlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTMxOTIsImV4cCI6MjA2OTU2OTE5Mn0.xFgMv-K5o5yyTpe4U2YJK5jC9GPJp98G4cgD9p5W4ak';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Global State
+        let currentUser = null;
+        let currentPage = 'home';
+        let files = [];
+        let news = [];
+        let chatList = [];
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('authScreen').classList.remove('hidden');
+            }, 3000);
+
+            initializeEventListeners();
+            checkAuthStatus();
+        });
+
+        // Check Authentication Status
+        async function checkAuthStatus() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                currentUser = user;
+                showMainApp();
+            }
+        }
+
+        // Initialize Event Listeners
+        function initializeEventListeners() {
+            // Auth Forms
+            document.getElementById('showSignup').addEventListener('click', showSignupForm);
+            document.getElementById('showLogin').addEventListener('click', showLoginForm);
+            document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
+            document.getElementById('signupFormElement').addEventListener('submit', handleSignup);
+
+            // Bottom Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const page = e.currentTarget.dataset.page;
+                    switchPage(page);
+                });
+            });
+
+            // Modals
+            document.getElementById('cancelPurchase').addEventListener('click', closePurchaseModal);
+            document.getElementById('createNewsProfileBtn').addEventListener('click', showNewsProfileModal);
+            document.getElementById('cancelNewsProfile').addEventListener('click', closeNewsProfileModal);
+            document.getElementById('newsProfileForm').addEventListener('submit', handleCreateNewsProfile);
+            document.getElementById('createNewsBtn').addEventListener('click', showCreateNewsModal);
+            document.getElementById('cancelCreateNews').addEventListener('click', closeCreateNewsModal);
+            document.getElementById('createNewsForm').addEventListener('submit', handleCreateNews);
+
+            // Support Chat
+            document.getElementById('sendSupportMessage').addEventListener('click', sendSupportMessage);
+            document.getElementById('supportMessageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendSupportMessage();
+                }
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        }
+
+        // Authentication Functions
+        function showSignupForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signupName').value;
+            const country = document.getElementById('signupCountry').value;
+            const phone = document.getElementById('signupPhone').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            const fullPhone = country + phone;
+
+            try {
+                // Check if phone already exists
+                const { data: existingUser } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('phone', fullPhone)
+                    .single();
+
+                if (existingUser) {
+                    alert('Phone number already registered! | ဖုန်းနံပါတ်သည် မှတ်ပုံတင်ပြီးသားဖြစ်ပါသည်!');
+                    return;
+                }
+
+                // Create anonymous user account
+                const { data, error } = await supabase.auth.signUp({
+                    email: `${fullPhone}@pgopper.com`,
+                    password: password,
+                });
+
+                if (error) throw error;
+
+                // Insert user data
+                const { error: insertError } = await supabase
+                    .from('users')
+                    .insert([
+                        {
+                            id: data.user.id,
+                            name: name,
+                            phone: fullPhone,
+                            country: country,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (insertError) throw insertError;
+
+                alert('Account created successfully! Please login. | အကောင့်ဖန်တီးပြီးပါပြီ! ကျေးဇူးပြု၍ ဝင်ရောက်ပါ။');
+                showLoginForm();
+            } catch (error) {
+                alert('Error creating account: ' + error.message);
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const country = document.getElementById('loginCountry').value;
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const fullPhone = country + phone;
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: `${fullPhone}@pgopper.com`,
+                    password: password,
+                });
+
+                if (error) throw error;
+
+                currentUser = data.user;
+                showMainApp();
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        }
+
+        async function handleLogout() {
+            const { error } = await supabase.auth.signOut();
+            if (!error) {
+                currentUser = null;
+                document.getElementById('mainApp').classList.add('hidden');
+                document.getElementById('authScreen').classList.remove('hidden');
+                showLoginForm();
+            }
+        }
+
+        // Main App Functions
+        function showMainApp() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            loadUserProfile();
+            loadFiles();
+            loadNews();
+            loadAboutContent();
+        }
+
+        function switchPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            
+            // Show selected page
+            document.getElementById(page + 'Page').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+            
+            currentPage = page;
+
+            // Load page-specific content
+            if (page === 'chat') {
+                loadChatList();
+            } else if (page === 'news') {
+                loadNews();
+            } else if (page === 'support') {
+                loadSupportMessages();
+            }
+        }
+
+        // User Profile Functions
+        async function loadUserProfile() {
+            try {
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (userData) {
+                    document.getElementById('profileName').textContent = userData.name || 'User';
+                    document.getElementById('profilePhone').textContent = userData.phone || '';
+                }
+
+                // Load purchase count
+                const { data: purchases } = await supabase
+                    .from('purchases')
+                    .select('*')
+                    .eq('user_id', currentUser.id);
+
+                document.getElementById('purchaseCount').textContent = purchases?.length || 0;
+
+                // Load news count
+                const { data: userNews } = await supabase
+                    .from('news')
+                    .select('*')
+                    .eq('user_id', currentUser.id);
+
+                document.getElementById('newsCount').textContent = userNews?.length || 0;
+
+                loadPurchaseHistory();
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        async function loadPurchaseHistory() {
+            try {
+                const { data: purchases } = await supabase
+                    .from('purchases')
+                    .select(`
+                        *,
+                        files (
+                            name,
+                            file_type,
+                            price
+                        )
+                    `)
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                const historyContainer = document.getElementById('purchaseHistory');
+                historyContainer.innerHTML = '';
+
+                if (purchases && purchases.length > 0) {
+                    purchases.forEach(purchase => {
+                        const purchaseElement = document.createElement('div');
+                        purchaseElement.className = 'bg-white bg-opacity-20 rounded-lg p-3 flex justify-between items-center';
+                        purchaseElement.innerHTML = `
+                            <div>
+                                <h4 class="text-white font-semibold">${purchase.files.name}</h4>
+                                <p class="text-white opacity-70 text-sm">$${purchase.files.price}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-green-400 text-sm font-semibold">${purchase.status}</span>
+                                <p class="text-white opacity-70 text-xs">${new Date(purchase.created_at).toLocaleDateString()}</p>
+                            </div>
+                        `;
+                        historyContainer.appendChild(purchaseElement);
+                    });
+                } else {
+                    historyContainer.innerHTML = '<p class="text-white opacity-70 text-center">No purchases yet</p>';
+                }
+            } catch (error) {
+                console.error('Error loading purchase history:', error);
+            }
+        }
+
+        // Files Functions
+        async function loadFiles() {
+            try {
+                const { data: filesData } = await supabase
+                    .from('files')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                files = filesData || [];
+                displayFiles();
+            } catch (error) {
+                console.error('Error loading files:', error);
+            }
+        }
+
+        function displayFiles() {
+            const fileGrid = document.getElementById('fileGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (files.length === 0) {
+                fileGrid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            fileGrid.innerHTML = '';
+
+            files.forEach(file => {
+                const fileElement = document.createElement('div');
+                fileElement.className = 'file-card card-hover';
+                fileElement.innerHTML = `
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
+                            <i class="fas ${getFileIcon(file.file_type)} text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">${file.name}</h3>
+                        <p class="text-gray-600 text-sm mb-3">${file.description}</p>
+                        <div class="text-lg font-bold text-purple-600 mb-3">$${file.price}</div>
+                        <button onclick="initiatesPurchase('${file.id}')" class="w-full btn-primary text-white py-2 rounded-lg text-sm">
+                            <i class="fas fa-download mr-2"></i>Download
+                        </button>
+                    </div>
+                `;
+                fileGrid.appendChild(fileElement);
+            });
+        }
+
+        function getFileIcon(fileType) {
+            const iconMap = {
+                'apk': 'fa-android',
+                'pdf': 'fa-file-pdf',
+                'doc': 'fa-file-word',
+                'zip': 'fa-file-archive',
+                'mp3': 'fa-file-audio',
+                'mp4': 'fa-file-video',
+                'image': 'fa-file-image'
+            };
+            return iconMap[fileType] || 'fa-file';
+        }
+
+        async function initiatesPurchase(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (!file) return;
+
+            // Check if already purchased
+            const { data: existingPurchase } = await supabase
+                .from('purchases')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .eq('file_id', fileId)
+                .eq('status', 'approved')
+                .single();
+
+            if (existingPurchase) {
+                // Direct download
+                downloadFile(file);
+                return;
+            }
+
+            // Show purchase modal
+            showPurchaseModal(file);
+        }
+
+        function showPurchaseModal(file) {
+            const modal = document.getElementById('purchaseModal');
+            const content = document.getElementById('purchaseContent');
+            
+            content.innerHTML = `
+                <div class="text-center mb-4">
+                    <div class="w-20 h-20 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
+                        <i class="fas ${getFileIcon(file.file_type)} text-3xl text-white"></i>
+                    </div>
+                    <h4 class="text-white text-lg font-bold">${file.name}</h4>
+                    <p class="text-white opacity-80">${file.description}</p>
+                    <div class="text-2xl font-bold text-yellow-400 mt-2">$${file.price}</div>
+                </div>
+                
+                <div class="space-y-3">
+                    <h5 class="text-white font-semibold">Payment Methods:</h5>
+                    <div class="payment-option selected" data-method="bank">
+                        <h6 class="font-semibold">Bank Transfer</h6>
+                        <p class="text-sm opacity-80">Account: 1234567890</p>
+                    </div>
+                    <div class="payment-option" data-method="mobile">
+                        <h6 class="font-semibold">Mobile Payment</h6>
+                        <p class="text-sm opacity-80">Phone: +95987654321</p>
+                    </div>
+                </div>
+            `;
+
+            // Add payment method selection
+            content.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    content.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+
+            modal.classList.remove('hidden');
+        }
+
+        function closePurchaseModal() {
+            document.getElementById('purchaseModal').classList.add('hidden');
+        }
+
+        async function downloadFile(file) {
+            try {
+                // Get file URL from Supabase storage
+                const { data } = supabase.storage
+                    .from('files')
+                    .getPublicUrl(file.file_path);
+
+                // Create download link
+                const link = document.createElement('a');
+                link.href = data.publicUrl;
+                link.download = file.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                alert('Error downloading file. Please try again.');
+            }
+        }
+
+        // News Functions
+        async function loadNews() {
+            try {
+                const { data: newsData } = await supabase
+                    .from('news')
+                    .select(`
+                        *,
+                        news_profiles (
+                            username,
+                            display_name,
+                            profile_picture_url
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+
+                news = newsData || [];
+                displayNews();
+            } catch (error) {
+                console.error('Error loading news:', error);
+            }
+        }
+
+        function displayNews() {
+            const newsFeed = document.getElementById('newsFeed');
+            const emptyState = document.getElementById('emptyNewsState');
+
+            if (news.length === 0) {
+                newsFeed.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            newsFeed.innerHTML = '';
+
+            news.forEach(item => {
+                const newsElement = document.createElement('div');
+                newsElement.className = 'news-card glass-effect p-6';
+                newsElement.innerHTML = `
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                            ${item.news_profiles?.profile_picture_url ? 
+                                `<img src="${item.news_profiles.profile_picture_url}" class="w-full h-full rounded-full object-cover">` :
+                                `<i class="fas fa-user text-white"></i>`
+                            }
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold">${item.news_profiles?.display_name || 'Anonymous'}</h4>
+                            <p class="text-white opacity-70 text-sm">@${item.news_profiles?.username || 'anonymous'}</p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-white text-lg font-bold mb-2">${item.title}</h3>
+                    <p class="text-white opacity-90 mb-4">${item.content}</p>
+                    
+                    ${item.media_urls && item.media_urls.length > 0 ? `
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            ${item.media_urls.slice(0, 4).map(url => `
+                                <div class="rounded-lg overflow-hidden">
+                                    ${url.includes('.mp4') || url.includes('.mov') ? 
+                                        `<video controls class="w-full h-32 object-cover"><source src="${url}" type="video/mp4"></video>` :
+                                        `<img src="${url}" class="w-full h-32 object-cover">`
+                                    }
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="flex items-center justify-between text-white opacity-70 text-sm">
+                        <span>${new Date(item.created_at).toLocaleDateString()}</span>
+                        <button onclick="shareNews('${item.id}')" class="hover:opacity-100 transition-opacity">
+                            <i class="fas fa-share mr-1"></i>Share
+                        </button>
+                    </div>
+                `;
+                newsFeed.appendChild(newsElement);
+            });
+        }
+
+        function showNewsProfileModal() {
+            document.getElementById('newsProfileModal').classList.remove('hidden');
+        }
+
+        function closeNewsProfileModal() {
+            document.getElementById('newsProfileModal').classList.add('hidden');
+        }
+
+        async function handleCreateNewsProfile(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('newsUsername').value;
+            const displayName = document.getElementById('newsDisplayName').value;
+            const profilePicture = document.getElementById('newsProfilePicture').files[0];
+
+            try {
+                // Check if username already exists
+                const { data: existingProfile } = await supabase
+                    .from('news_profiles')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+
+                if (existingProfile) {
+                    alert('Username already exists! Please choose another.');
+                    return;
+                }
+
+                let profilePictureUrl = null;
+
+                // Upload profile picture if provided
+                if (profilePicture) {
+                    const fileName = `${currentUser.id}-${Date.now()}-${profilePicture.name}`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('news-profiles')
+                        .upload(fileName, profilePicture);
+
+                    if (uploadError) throw uploadError;
+
+                    const { data } = supabase.storage
+                        .from('news-profiles')
+                        .getPublicUrl(fileName);
+                    
+                    profilePictureUrl = data.publicUrl;
+                }
+
+                // Create news profile
+                const { error } = await supabase
+                    .from('news_profiles')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            username: username,
+                            display_name: displayName,
+                            profile_picture_url: profilePictureUrl,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                alert('News profile created successfully!');
+                closeNewsProfileModal();
+                document.getElementById('newsProfileForm').reset();
+            } catch (error) {
+                alert('Error creating news profile: ' + error.message);
+            }
+        }
+
+        function showCreateNewsModal() {
+            document.getElementById('createNewsModal').classList.remove('hidden');
+        }
+
+        function closeCreateNewsModal() {
+            document.getElementById('createNewsModal').classList.add('hidden');
+        }
+
+        async function handleCreateNews(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('newsTitle').value;
+            const content = document.getElementById('newsContent').value;
+            const mediaFiles = document.getElementById('newsMedia').files;
+
+            try {
+                // Check if user has news profile
+                const { data: profile } = await supabase
+                    .from('news_profiles')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (!profile) {
+                    alert('Please create a news profile first!');
+                    return;
+                }
+
+                let mediaUrls = [];
+
+                // Upload media files if provided
+                if (mediaFiles.length > 0) {
+                    for (let file of mediaFiles) {
+                        const fileName = `${currentUser.id}-${Date.now()}-${file.name}`;
+                        const { data: uploadData, error: uploadError } = await supabase.storage
+                            .from('news-media')
+                            .upload(fileName, file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data } = supabase.storage
+                            .from('news-media')
+                            .getPublicUrl(fileName);
+                        
+                        mediaUrls.push(data.publicUrl);
+                    }
+                }
+
+                // Create news post
+                const { error } = await supabase
+                    .from('news')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            news_profile_id: profile.id,
+                            title: title,
+                            content: content,
+                            media_urls: mediaUrls,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                alert('News posted successfully!');
+                closeCreateNewsModal();
+                document.getElementById('createNewsForm').reset();
+                loadNews();
+            } catch (error) {
+                alert('Error creating news: ' + error.message);
+            }
+        }
+
+        function shareNews(newsId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'PG-OPPER News',
+                    text: 'Check out this news from PG-OPPER',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Link copied to clipboard!');
+                });
+            }
+        }
+
+        // Chat Functions
+        async function loadChatList() {
+            // This would load the user's chat conversations
+            // For now, we'll show an empty state
+            const chatList = document.getElementById('chatList');
+            const emptyState = document.getElementById('emptyChatState');
+            
+            chatList.innerHTML = '';
+            emptyState.classList.remove('hidden');
+        }
+
+        // Support Functions
+        async function loadSupportMessages() {
+            try {
+                const { data: messages } = await supabase
+                    .from('support_messages')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: true });
+
+                const messagesContainer = document.getElementById('supportMessages');
+                messagesContainer.innerHTML = '';
+
+                if (messages && messages.length > 0) {
+                    messages.forEach(message => {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `flex ${message.is_admin ? 'justify-start' : 'justify-end'} mb-3`;
+                        messageElement.innerHTML = `
+                            <div class="chat-bubble ${message.is_admin ? 'received' : 'sent'} p-3 max-w-xs">
+                                <p class="text-sm">${message.content}</p>
+                                <span class="text-xs opacity-70">${new Date(message.created_at).toLocaleTimeString()}</span>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(messageElement);
+                    });
+                    
+                    // Scroll to bottom
+                    document.getElementById('supportChatContainer').scrollTop = document.getElementById('supportChatContainer').scrollHeight;
+                }
+            } catch (error) {
+                console.error('Error loading support messages:', error);
+            }
+        }
+
+        async function sendSupportMessage() {
+            const input = document.getElementById('supportMessageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            try {
+                const { error } = await supabase
+                    .from('support_messages')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            content: message,
+                            is_admin: false,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                input.value = '';
+                loadSupportMessages();
+            } catch (error) {
+                console.error('Error sending support message:', error);
+                alert('Error sending message. Please try again.');
+            }
+        }
+
+        // About Functions
+        async function loadAboutContent() {
+            try {
+                const { data: aboutData } = await supabase
+                    .from('about_content')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                const aboutContent = document.getElementById('aboutContent');
+                const defaultAbout = document.getElementById('defaultAbout');
+
+                if (aboutData && aboutData.length > 0) {
+                    defaultAbout.classList.add('hidden');
+                    aboutContent.innerHTML = '';
+                    
+                    aboutData.forEach(item => {
+                        const aboutElement = document.createElement('div');
+                        aboutElement.className = 'glass-effect rounded-xl p-6 mb-4';
+                        aboutElement.innerHTML = `
+                            <h3 class="text-white text-xl font-bold mb-4">${item.name}</h3>
+                            ${item.social_links && item.social_links.length > 0 ? `
+                                <div class="flex flex-wrap gap-3">
+                                    ${item.social_links.map(link => `
+                                        <a href="${link.url}" target="_blank" class="flex items-center space-x-2 bg-white bg-opacity-20 rounded-lg p-3 hover:bg-opacity-30 transition-colors">
+                                            ${link.icon_url ? `<img src="${link.icon_url}" class="w-6 h-6">` : `<i class="fas fa-link"></i>`}
+                                            <span class="text-white">${link.name}</span>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        `;
+                        aboutContent.appendChild(aboutElement);
+                    });
+                } else {
+                    defaultAbout.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error loading about content:', error);
+            }
+        }
+
+        // Utility Functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        // Real-time subscriptions
+        function setupRealtimeSubscriptions() {
+            // Subscribe to new files
+            supabase
+                .channel('files')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'files' }, payload => {
+                    loadFiles();
+                })
+                .subscribe();
+
+            // Subscribe to new news
+            supabase
+                .channel('news')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'news' }, payload => {
+                    loadNews();
+                })
+                .subscribe();
+
+            // Subscribe to support messages
+            supabase
+                .channel('support_messages')
+                .on('postgres_changes', { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'support_messages',
+                    filter: `user_id=eq.${currentUser?.id}`
+                }, payload => {
+                    if (currentPage === 'support') {
+                        loadSupportMessages();
+                    }
+                })
+                .subscribe();
+        }
+
+        // Initialize real-time subscriptions when user is authenticated
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                currentUser = session.user;
+                setupRealtimeSubscriptions();
+            }
+        });
+    </script>
+</body>
+</html>
